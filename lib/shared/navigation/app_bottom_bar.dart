@@ -13,7 +13,7 @@ import 'nav_icon_button.dart';
 import 'nav_tab.dart';
 import 'nav_tour_keys.dart';
 
-const double kAppBottomBarHeight = 64;
+const double kAppBottomBarHeight = 80;
 
 /// Horizontal nav bar for narrow screens. Settings lives in [AppTopBar]; the
 /// middle slot is left empty for the centre button.
@@ -52,8 +52,9 @@ class AppBottomBar extends ConsumerWidget {
       wishlistCount: wishlistCount,
       releasesTodayCount: ref.watch(releasesTodayCountProvider),
     );
-    final int selectedIndex =
-        destinations.indexWhere((NavDestination d) => d.tab == selectedTab);
+    final int selectedIndex = destinations.indexWhere(
+      (NavDestination d) => d.tab == selectedTab,
+    );
 
     // One extra slot in the middle is reserved for the centre button.
     final int slotCount = destinations.length + 1;
@@ -93,12 +94,15 @@ class AppBottomBar extends ConsumerWidget {
                     ),
                     Row(
                       children: <Widget>[
-                        for (int i = 0; i < destinations.length; i++) ...<Widget>[
+                        for (
+                          int i = 0;
+                          i < destinations.length;
+                          i++
+                        ) ...<Widget>[
                           if (i == kNavCenterSlot)
                             NavCenterButton(
-                              key: tourActive
-                                  ? tourKeys.personalization
-                                  : null,
+                              active: centerActive,
+                              key: tourActive ? tourKeys.personalization : null,
                               width: itemWidth,
                               height: kAppBottomBarHeight,
                               tooltip: S.of(context).personalizationTitle,
@@ -109,7 +113,8 @@ class AppBottomBar extends ConsumerWidget {
                                 ? tourKeys.keyFor(destinations[i].tab)
                                 : null,
                             destination: destinations[i],
-                            active: !centerActive &&
+                            active:
+                                !centerActive &&
                                 destinations[i].tab == selectedTab,
                             width: itemWidth,
                             height: kAppBottomBarHeight,

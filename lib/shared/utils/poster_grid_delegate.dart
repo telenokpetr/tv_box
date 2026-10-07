@@ -10,9 +10,9 @@ import '../theme/app_spacing.dart';
   required double cardScale,
 }) {
   final double screenWidth = MediaQuery.sizeOf(context).width;
-  final bool isLandscape = isLandscapeMobile(context);
-  final bool isDesktop =
-      screenWidth >= kDesktopContentBreakpoint && !kIsMobile;
+  final bool isLandscape =
+      isLandscapeMobile(context) && screenWidth < kDesktopContentBreakpoint;
+  final bool isDesktop = screenWidth >= kDesktopContentBreakpoint;
 
   final double padding = isLandscape ? AppSpacing.sm : AppSpacing.screenPadding;
   final double crossSpacing = isLandscape ? AppSpacing.sm : AppSpacing.gridGap;

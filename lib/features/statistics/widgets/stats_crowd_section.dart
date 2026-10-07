@@ -115,10 +115,11 @@ class _CrowdCard extends StatelessWidget {
                 titleLanguage: titleLanguage,
               ),
             ),
-          Row(
+          Wrap(
+            spacing: AppSpacing.md,
+            runSpacing: AppSpacing.xs,
             children: <Widget>[
               StatsLegendDot(color: accent, label: l.statsCrowdMyRating),
-              const SizedBox(width: AppSpacing.md),
               StatsLegendDot(
                 color: AppColors.textTertiary,
                 label: l.statsCrowdSource,

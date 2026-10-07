@@ -10,6 +10,7 @@ import 'features/settings/providers/settings_provider.dart';
 import 'features/splash/screens/splash_screen.dart';
 import 'l10n/app_localizations.dart';
 import 'shared/gamepad/gamepad_provider.dart';
+import 'shared/keyboard/remote_shortcuts.dart';
 import 'shared/theme/app_colors.dart';
 import 'shared/theme/app_theme.dart';
 import 'shared/theme/app_theme_id.dart';
@@ -72,6 +73,9 @@ class _TonkatsuBoxAppState extends ConsumerState<TonkatsuBoxApp> {
       child: MaterialApp(
         key: ValueKey<AppThemeId>(themeId),
         title: 'Tonkatsu Box',
+        // Android TV sends DPAD_CENTER as select. Keep this at the app root
+        // so cards, dialogs and welcome screens receive the same OK action.
+        shortcuts: remoteShortcuts,
         debugShowCheckedModeBanner: false,
         theme: theme,
         locale: Locale(appLanguage),
@@ -110,7 +114,7 @@ class _TextScaleScope extends ConsumerWidget {
     final double textScale = ref.watch(
       settingsNotifierProvider.select((SettingsState s) => s.textScale),
     );
-    if (textScale == SettingsKeys.textScaleDefault) return child;
+    if (textScale == 1.0) return child;
     final MediaQueryData media = MediaQuery.of(context);
     return MediaQuery(
       data: media.copyWith(

@@ -19,7 +19,6 @@ abstract final class AppSpacing {
   /// 32px — extra large padding.
   static const double xl = 32;
 
-
   /// 2px — half-height rounding for 4px-tall elements
   /// (sheet grab handles, thin progress bars).
   static const double radiusXxs = 2;
@@ -39,23 +38,21 @@ abstract final class AppSpacing {
   /// 20px — extra large rounding (modal dialogs).
   static const double radiusXl = 20;
 
-
   /// 48px — standard button height (filled/outlined buttons).
-  static const double buttonHeight = 48;
+  static const double buttonHeight = 64;
 
   /// 36px — compact button height (inline and toolbar buttons that must
   /// not stretch to the theme's full-width default).
-  static const double buttonHeightCompact = 36;
+  static const double buttonHeightCompact = 48;
 
   /// 28px — dense chip-like button height (filter sheets).
-  static const double buttonHeightDense = 28;
-
+  static const double buttonHeightDense = 40;
 
   /// 16px — gap between grid cards.
-  static const double gridGap = 16;
+  static const double gridGap = 24;
 
   /// 20px — content inset from screen edges.
-  static const double screenPadding = 20;
+  static const double screenPadding = 32;
 
   static const double posterAspectRatio = 2.0 / 3.0;
 
@@ -69,7 +66,7 @@ abstract final class AppSpacing {
   static const int gridColumnsMobile = 3;
 
   /// Max card width on desktop grids at 100% card scale.
-  static const double desktopMaxCardWidth = 170;
+  static const double desktopMaxCardWidth = 210;
 
   /// Grid cell ratio for poster cards: a ~2:3 poster plus the title block
   /// below it.

@@ -192,7 +192,7 @@ class _MediaPosterCardState extends State<MediaPosterCard>
   Animation<double>? _scaleAnimation;
   FocusNode? _focusNode;
 
-  static const double _hoverScale = 1.02;
+  static const double _hoverScale = 1.025;
 
   /// Source logo size as a share of the meta font size. Stays under the line
   /// height (font × 1.3) so the logo never raises the meta line.
@@ -252,6 +252,13 @@ class _MediaPosterCardState extends State<MediaPosterCard>
           } else {
             _hoverController?.reverse();
           }
+          if (hasFocus) {
+            Scrollable.ensureVisible(
+              context,
+              alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
+              duration: const Duration(milliseconds: 160),
+            );
+          }
           widget.onFocusChanged?.call(hasFocus);
         },
         child: MouseRegion(
@@ -264,8 +271,7 @@ class _MediaPosterCardState extends State<MediaPosterCard>
             animation: _hoverController!,
             builder: (BuildContext context, Widget? child) {
               return Transform.scale(
-                scale:
-                    widget.enableHoverScale ? _scaleAnimation!.value : 1.0,
+                scale: widget.enableHoverScale ? _scaleAnimation!.value : 1.0,
                 child: child,
               );
             },
@@ -274,7 +280,7 @@ class _MediaPosterCardState extends State<MediaPosterCard>
               onLongPress: widget.onLongPress,
               onSecondaryTapUp: widget.onSecondaryTap != null
                   ? (TapUpDetails details) =>
-                      widget.onSecondaryTap!(details.globalPosition)
+                        widget.onSecondaryTap!(details.globalPosition)
                   : null,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -334,14 +340,16 @@ class _MediaPosterCardState extends State<MediaPosterCard>
   Widget _buildGridPoster() {
     final bool hasOverlay =
         widget.platformOverlayAsset != null && !widget.isInCollection;
-    final double borderRadius =
-        hasOverlay ? 0 : (_isCompact ? AppSpacing.radiusSm : AppSpacing.radiusMd);
+    final double borderRadius = hasOverlay
+        ? 0
+        : (_isCompact ? AppSpacing.radiusSm : AppSpacing.radiusMd);
 
     final bool showFavoriteBadge =
         widget.onToggleFavorite != null || widget.showFavorite;
     final bool showStatusDot =
         widget.status != null && widget.status != ItemStatus.notStarted;
-    final bool showPlatformBadge = widget.platformOverlayAsset == null &&
+    final bool showPlatformBadge =
+        widget.platformOverlayAsset == null &&
         widget.platformLabel != null &&
         widget.platformColor != null;
 
@@ -357,13 +365,10 @@ class _MediaPosterCardState extends State<MediaPosterCard>
         child: Stack(
           fit: StackFit.expand,
           children: <Widget>[
-            _buildCachedImage(
-              placeholder: _buildGridPlaceholder(),
-            ),
+            _buildCachedImage(placeholder: _buildGridPlaceholder()),
 
             // Platform overlay sits above the poster, below the badges.
-            if (widget.platformOverlayAsset != null &&
-                !widget.isInCollection)
+            if (widget.platformOverlayAsset != null && !widget.isInCollection)
               Positioned.fill(
                 child: Image.asset(
                   widget.platformOverlayAsset!,
@@ -375,12 +380,10 @@ class _MediaPosterCardState extends State<MediaPosterCard>
             AnimatedBuilder(
               animation: _hoverController!,
               builder: (BuildContext context, Widget? child) {
-                final int alpha =
-                    (0x40 * (1.0 - _hoverController!.value)).round();
+                final int alpha = (0x40 * (1.0 - _hoverController!.value))
+                    .round();
                 return Positioned.fill(
-                  child: ColoredBox(
-                    color: Color.fromARGB(alpha, 0, 0, 0),
-                  ),
+                  child: ColoredBox(color: Color.fromARGB(alpha, 0, 0, 0)),
                 );
               },
             ),
@@ -395,9 +398,10 @@ class _MediaPosterCardState extends State<MediaPosterCard>
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: AppColors.textPrimary.withAlpha(
-                          (40 * _hoverController!.value).round(),
+                        color: AppColors.brand.withAlpha(
+                          (255 * _hoverController!.value).round(),
                         ),
+                        width: 3,
                       ),
                       borderRadius: BorderRadius.circular(borderRadius),
                     ),
@@ -430,8 +434,9 @@ class _MediaPosterCardState extends State<MediaPosterCard>
                         ),
                         decoration: BoxDecoration(
                           color: AppColors.scrim.withAlpha(170),
-                          borderRadius:
-                              BorderRadius.circular(AppSpacing.radiusXs),
+                          borderRadius: BorderRadius.circular(
+                            AppSpacing.radiusXs,
+                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -443,8 +448,9 @@ class _MediaPosterCardState extends State<MediaPosterCard>
                             ),
                             SizedBox(width: _isCompact ? 1 : 2),
                             Text(
-                              S.of(context).runtimeHours(
-                                  widget.timeToBeatHours!),
+                              S
+                                  .of(context)
+                                  .runtimeHours(widget.timeToBeatHours!),
                               style: TextStyle(
                                 color: AppColors.onOverlay,
                                 fontSize: _isCompact ? 7 : 9,
@@ -492,8 +498,9 @@ class _MediaPosterCardState extends State<MediaPosterCard>
                       ),
                       decoration: BoxDecoration(
                         color: widget.platformColor!.withAlpha(210),
-                        borderRadius:
-                            BorderRadius.circular(AppSpacing.radiusXs),
+                        borderRadius: BorderRadius.circular(
+                          AppSpacing.radiusXs,
+                        ),
                       ),
                       child: Text(
                         widget.platformLabel!,
@@ -511,12 +518,7 @@ class _MediaPosterCardState extends State<MediaPosterCard>
 
             // Bottom strip: status, progress and tag only — the title and its
             // meta line live under the poster.
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: _buildStatsStrip(),
-            ),
+            Positioned(left: 0, right: 0, bottom: 0, child: _buildStatsStrip()),
           ],
         ),
       ),
@@ -644,13 +646,15 @@ class _MediaPosterCardState extends State<MediaPosterCard>
   /// The source logo sits in a [Row], not a [WidgetSpan] — a span grows the
   /// text line past the height the title block budgeted.
   Widget _buildSubtitleRow(BuildContext context) {
-    final TextStyle baseStyle =
-        AppTypography.posterSubtitleFor(compact: _isCompact);
+    final TextStyle baseStyle = AppTypography.posterSubtitleFor(
+      compact: _isCompact,
+    );
     final Widget metaText = _buildMetaText(context, baseStyle);
 
     if (widget.source case final DataSource source) {
-      final double fontSize =
-          MediaQuery.textScalerOf(context).scale(baseStyle.fontSize ?? 11);
+      final double fontSize = MediaQuery.textScalerOf(
+        context,
+      ).scale(baseStyle.fontSize ?? 11);
       return Row(
         children: <Widget>[
           _SourceLogoLink(
@@ -669,8 +673,10 @@ class _MediaPosterCardState extends State<MediaPosterCard>
   Widget _buildMetaText(BuildContext context, TextStyle baseStyle) {
     // The rating star is not in Inter; its fallback font would raise the line
     // past fontSize×height and burst the block budgeted from it.
-    final StrutStyle strut =
-        StrutStyle.fromTextStyle(baseStyle, forceStrutHeight: true);
+    final StrutStyle strut = StrutStyle.fromTextStyle(
+      baseStyle,
+      forceStrutHeight: true,
+    );
 
     // Parts before the type: rating, platform, year.
     final List<String> before = <String>[];
@@ -721,7 +727,10 @@ class _MediaPosterCardState extends State<MediaPosterCard>
               style: baseStyle.copyWith(color: AppColors.ratingGold),
             ),
             if (all.isNotEmpty)
-              TextSpan(text: ' \u00b7 ${all.join(' \u00b7 ')}', style: baseStyle),
+              TextSpan(
+                text: ' \u00b7 ${all.join(' \u00b7 ')}',
+                style: baseStyle,
+              ),
           ],
         ),
         strutStyle: strut,
@@ -731,7 +740,8 @@ class _MediaPosterCardState extends State<MediaPosterCard>
     }
 
     final String typeLabel =
-        widget.typeLabelOverride ?? widget.mediaType!.localizedLabel(S.of(context));
+        widget.typeLabelOverride ??
+        widget.mediaType!.localizedLabel(S.of(context));
     final Color typeColor = MediaTypeTheme.colorFor(widget.mediaType!);
 
     return Text.rich(
@@ -791,8 +801,7 @@ class _MediaPosterCardState extends State<MediaPosterCard>
             ),
 
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
               color: colorScheme.surfaceContainerLow,
               child: Text(
                 widget.title,
@@ -976,8 +985,7 @@ class _GlowBorderPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_GlowBorderPainter oldDelegate) =>
-      progress != oldDelegate.progress ||
-      color != oldDelegate.color;
+      progress != oldDelegate.progress || color != oldDelegate.color;
 }
 
 /// Tappable tag badge shown over the poster.
@@ -1025,15 +1033,15 @@ class _TagBadge extends StatelessWidget {
         ? Color(tagColor!)
         : AppColors.textSecondary;
     final bool hasTag = tagName != null;
-    final Color labelColor =
-        tagTextColor != null ? Color(tagTextColor!) : AppColors.onOverlay;
-    final String label =
-        moreCount > 0 ? '$tagName +$moreCount' : (tagName ?? '');
+    final Color labelColor = tagTextColor != null
+        ? Color(tagTextColor!)
+        : AppColors.onOverlay;
+    final String label = moreCount > 0
+        ? '$tagName +$moreCount'
+        : (tagName ?? '');
 
     final Widget badge = Container(
-      constraints: BoxConstraints(
-        maxWidth: compact ? 50 : 70,
-      ),
+      constraints: BoxConstraints(maxWidth: compact ? 50 : 70),
       padding: EdgeInsets.symmetric(
         horizontal: compact ? 3 : 5,
         vertical: compact ? 1 : 2,
@@ -1077,11 +1085,7 @@ class _TagBadge extends StatelessWidget {
 /// Source brand logo opening the meta line, optionally a link to the item's
 /// page on that source.
 class _SourceLogoLink extends StatelessWidget {
-  const _SourceLogoLink({
-    required this.source,
-    required this.size,
-    this.onTap,
-  });
+  const _SourceLogoLink({required this.source, required this.size, this.onTap});
 
   final DataSource source;
   final double size;
@@ -1169,10 +1173,7 @@ class _FavoriteButton extends StatelessWidget {
 }
 
 class _InCollectionButton extends StatelessWidget {
-  const _InCollectionButton({
-    required this.compact,
-    required this.onTap,
-  });
+  const _InCollectionButton({required this.compact, required this.onTap});
 
   final bool compact;
   final VoidCallback onTap;

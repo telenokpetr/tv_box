@@ -25,13 +25,14 @@ class NavDestination {
 }
 
 /// `width × height` is the cell, not the icon — the icon centers inside it.
-class NavIconButton extends StatelessWidget {
+class NavIconButton extends StatefulWidget {
   const NavIconButton({
     required this.destination,
     required this.active,
     required this.width,
     required this.height,
     required this.onTap,
+    this.autofocus = false,
     super.key,
   });
 
@@ -44,37 +45,85 @@ class NavIconButton extends StatelessWidget {
   final double height;
 
   final VoidCallback onTap;
+  final bool autofocus;
+
+  @override
+  State<NavIconButton> createState() => _NavIconButtonState();
+}
+
+class _NavIconButtonState extends State<NavIconButton> {
+  bool _focused = false;
 
   @override
   Widget build(BuildContext context) {
-    final Color iconColor =
-        active ? AppColors.textPrimary.withAlpha(230) : AppColors.textTertiary;
+    final Color iconColor = widget.active
+        ? AppColors.textPrimary.withAlpha(230)
+        : AppColors.textTertiary;
 
     Widget icon = Icon(
-      active ? destination.selectedIcon : destination.icon,
-      size: 22,
+      widget.active ? widget.destination.selectedIcon : widget.destination.icon,
+      size: 28,
       color: iconColor,
     );
 
-    if (destination.badgeCount > 0) {
+    if (widget.destination.badgeCount > 0) {
       icon = Badge(
-        label: Text('${destination.badgeCount}'),
+        label: Text('${widget.destination.badgeCount}'),
         child: icon,
       );
     }
 
     return SizedBox(
-      width: width,
-      height: height,
+      width: widget.width,
+      height: widget.height,
       child: Tooltip(
-        message: destination.label,
+        message: widget.destination.label,
         waitDuration: const Duration(milliseconds: 400),
         child: InkResponse(
-          onTap: onTap,
+          autofocus: widget.autofocus,
+          onTap: widget.onTap,
           radius: 28,
           containedInkWell: false,
           highlightShape: BoxShape.circle,
-          child: Center(child: icon),
+          onFocusChange: (bool focused) => setState(() => _focused = focused),
+          focusColor: Colors.transparent,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 120),
+            margin: const EdgeInsets.all(4),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            decoration: BoxDecoration(
+              color: _focused
+                  ? AppColors.brand.withAlpha(36)
+                  : widget.active
+                  ? AppColors.surfaceLight
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: _focused ? AppColors.brand : Colors.transparent,
+                width: 3,
+              ),
+            ),
+            child: widget.width >= 140
+                ? Row(
+                    children: <Widget>[
+                      icon,
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          widget.destination.label,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: iconColor,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : Center(child: icon),
+          ),
         ),
       ),
     );
@@ -102,9 +151,10 @@ class _NavPulsingBadgeState extends State<NavPulsingBadge>
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     )..repeat(reverse: true);
-    _animation = Tween<double>(begin: 0.4, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _animation = Tween<double>(
+      begin: 0.4,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override

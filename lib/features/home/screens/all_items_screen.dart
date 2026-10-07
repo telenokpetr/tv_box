@@ -409,7 +409,7 @@ class _AllItemsScreenState extends ConsumerState<AllItemsScreen> {
   ) {
     // getAll() returns display order, and the map preserves insertion order.
     final List<Tag> orderedTags = tagsMap.values.toList();
-    final bool isLandscape = isLandscapeMobile(context);
+    final bool isLandscape = useCompactCard(context);
     final double cardScale = ref.watch(
       settingsNotifierProvider.select((SettingsState s) => s.cardScale),
     );

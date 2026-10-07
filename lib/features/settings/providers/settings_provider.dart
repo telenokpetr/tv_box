@@ -145,7 +145,7 @@ abstract class SettingsKeys {
   /// Grid card size multiplier.
   static const String cardScale = 'card_scale';
 
-  static const double cardScaleDefault = 1.0;
+  static const double cardScaleDefault = 1.3;
 
   static const double cardScaleMin = 0.7;
 
@@ -156,7 +156,7 @@ abstract class SettingsKeys {
   /// UI text multiplier applied on top of the system text scale.
   static const String textScale = 'text_scale';
 
-  static const double textScaleDefault = 1.0;
+  static const double textScaleDefault = 1.15;
 
   static const double textScaleMin = 0.85;
 

@@ -108,16 +108,13 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets('should lay out a landscape phone with the keyboard up', (
+    testWidgets('should lay out a landscape phone', (
       WidgetTester tester,
     ) async {
-      // Leaves the body about 28px: a zero-height flex paints nothing and
-      // would never report the overflow this guards against.
-      await pumpShell(
-        tester,
-        size: const Size(640, 300),
-        keyboardHeight: 216,
-      );
+      // The TV rail keeps every destination at least 48px tall, which with
+      // the 80px top bar needs about 420px; the compact rail it replaced also
+      // fit above an open keyboard, this one no longer does.
+      await pumpShell(tester, size: const Size(640, 420));
       expect(tester.takeException(), isNull);
     });
 

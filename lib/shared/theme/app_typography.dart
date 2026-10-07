@@ -12,9 +12,8 @@ abstract final class AppTypography {
   /// Default font family.
   static const String fontFamily = 'Inter';
 
-  /// The base scale is dense, tuned for desktop; on phones it reads too small,
-  /// so every style gets +1px.
-  static final double _bump = kIsMobile ? 1 : 0;
+  /// Larger base typography for reading from a sofa or across a room.
+  static final double _bump = kIsMobile ? 3 : 4;
 
   /// Large heading (app name, screen title).
   static TextStyle get h1 => TextStyle(

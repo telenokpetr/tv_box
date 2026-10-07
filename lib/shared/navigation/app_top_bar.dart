@@ -16,12 +16,12 @@ import 'nav_tour_keys.dart';
 import 'search_providers.dart';
 import 'service_badges.dart';
 
-const double kAppTopBarHeight = 56;
+const double kAppTopBarHeight = 80;
 
-const double _kIdleSearchMaxWidth = 280;
+const double _kIdleSearchMaxWidth = 420;
 
-  /// Wrap in [PreferredSize] with `kAppTopBarHeight + MediaQuery.paddingOf(context).top`
-  /// so Scaffold reserves room for the Android status bar.
+/// Wrap in [PreferredSize] with `kAppTopBarHeight + MediaQuery.paddingOf(context).top`
+/// so Scaffold reserves room for the Android status bar.
 class AppTopBar extends ConsumerStatefulWidget {
   const AppTopBar({
     required this.activeTab,
@@ -75,17 +75,17 @@ class _AppTopBarState extends ConsumerState<AppTopBar> {
       _controller.text = initial;
     }
 
-    _querySub = ref.listenManual<String>(
-      ctx.queryProvider,
-      (String? previous, String next) {
-        if (_controller.text != next) {
-          _controller.value = TextEditingValue(
-            text: next,
-            selection: TextSelection.collapsed(offset: next.length),
-          );
-        }
-      },
-    );
+    _querySub = ref.listenManual<String>(ctx.queryProvider, (
+      String? previous,
+      String next,
+    ) {
+      if (_controller.text != next) {
+        _controller.value = TextEditingValue(
+          text: next,
+          selection: TextSelection.collapsed(offset: next.length),
+        );
+      }
+    });
   }
 
   /// Rebuilds on focus change — the empty field narrows and widens with it.
@@ -128,8 +128,7 @@ class _AppTopBarState extends ConsumerState<AppTopBar> {
         ref.watch(updateCheckProvider).valueOrNull?.hasUpdate ?? false;
     final bool settingsActive = widget.activeTab == NavTab.settings;
 
-    final bool isIdle =
-        !focusNode.hasFocus && _controller.text.isEmpty;
+    final bool isIdle = !focusNode.hasFocus && _controller.text.isEmpty;
     final bool metaSearchAvailable = ctx?.supportsMetaSearch ?? false;
     final SearchMode mode = metaSearchAvailable
         ? ref.watch(searchModeProvider)
@@ -169,9 +168,8 @@ class _AppTopBarState extends ConsumerState<AppTopBar> {
                   hint: hint,
                   mode: mode,
                   onModeChanged: metaSearchAvailable
-                      ? (SearchMode value) => ref
-                          .read(searchModeProvider.notifier)
-                          .state = value
+                      ? (SearchMode value) =>
+                            ref.read(searchModeProvider.notifier).state = value
                       : null,
                   onChanged: (String value) {
                     if (ctx == null) return;
@@ -233,8 +231,8 @@ class _SettingsButton extends StatelessWidget {
     }
 
     return SizedBox(
-      width: 40,
-      height: 40,
+      width: 56,
+      height: 56,
       child: InkResponse(
         onTap: onTap,
         radius: 24,
@@ -271,13 +269,14 @@ class _SearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color iconColor =
-        enabled ? AppColors.textTertiary : AppColors.textTertiary.withAlpha(120);
+    final Color iconColor = enabled
+        ? AppColors.textTertiary
+        : AppColors.textTertiary.withAlpha(120);
     final bool compact = isCompactScreen(context);
-    final double textSize = compact ? 12 : 13;
-    final double searchIconSize = compact ? 16 : 18;
-    final double clearIconSize = compact ? 14 : 16;
-    final double clearButtonSize = compact ? 24 : 28;
+    final double textSize = compact ? 16 : 18;
+    final double searchIconSize = compact ? 24 : 28;
+    final double clearIconSize = compact ? 22 : 24;
+    final double clearButtonSize = compact ? 40 : 48;
 
     final Widget searchIcon = Icon(
       mode == SearchMode.meta ? Icons.manage_search : Icons.search,

@@ -265,6 +265,9 @@ void main() {
     group('sync section', () {
       testWidgets('shows Enable Kodi sync toggle',
           (WidgetTester tester) async {
+            tester.view.physicalSize = const Size(800, 2400);
+            tester.view.devicePixelRatio = 1.0;
+            addTearDown(tester.view.reset);
         await tester.pumpWidget(await createWidget());
         await tester.pumpAndSettle();
 
@@ -273,6 +276,9 @@ void main() {
       });
 
       testWidgets('shows Sync interval tile', (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(800, 2400);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.reset);
         await tester.pumpWidget(await createWidget());
         await tester.pumpAndSettle();
 
@@ -282,6 +288,9 @@ void main() {
 
       testWidgets('Enable sync switch disabled when host is empty',
           (WidgetTester tester) async {
+            tester.view.physicalSize = const Size(800, 2400);
+            tester.view.devicePixelRatio = 1.0;
+            addTearDown(tester.view.reset);
         await tester.pumpWidget(await createWidget());
         await tester.pumpAndSettle();
 

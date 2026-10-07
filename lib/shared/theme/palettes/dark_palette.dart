@@ -3,20 +3,20 @@ import 'package:flutter/material.dart';
 import '../app_assets.dart';
 import '../app_palette.dart';
 
-/// The original dark theme — values are bit-exact with the pre-palette era.
+/// Quiet, high-contrast palette for the personal TV edition.
 const AppPalette darkPalette = AppPalette(
   brightness: Brightness.dark,
-  background: Color(0xFF0A0A0A),
-  surface: Color(0xFF141414),
-  surfaceLight: Color(0xFF1E1E1E),
-  surfaceBorder: Color(0xFF2A2A2A),
+  background: Color(0xFF101318),
+  surface: Color(0xFF191E26),
+  surfaceLight: Color(0xFF252D38),
+  surfaceBorder: Color(0xFF364150),
   textPrimary: Color(0xFFFFFFFF),
-  textSecondary: Color(0xFFB0B0B0),
-  textTertiary: Color(0xFF707070),
-  brand: Color(0xFFEF7B44),
-  onBrand: Color(0xFF0A0A0A),
+  textSecondary: Color(0xFFC0CAD7),
+  textTertiary: Color(0xFF94A3B8),
+  brand: Color(0xFF8BB8FF),
+  onBrand: Color(0xFF101318),
   gameAccent: Color(0xFF707DD2),
-  movieAccent: Color(0xFFEF7B44),
+  movieAccent: Color(0xFF8BB8FF),
   tvShowAccent: Color(0xFFB1E140),
   animationAccent: Color(0xFFA86ED4),
   visualNovelAccent: Color(0xFF2A5FC1),
@@ -41,9 +41,9 @@ const AppPalette darkPalette = AppPalette(
   onOverlay: Color(0xFFFFFFFF),
   barrier: Color(0x8A000000),
   shadow: Color(0xFF000000),
-  rowFade: Color(0xFF1A1A2E),
+  rowFade: Color(0xFF101318),
   badge: Color(0xFFEF5350),
   onBadge: Color(0xFFFFFFFF),
   tileAsset: AppAssets.backgroundTile,
-  tileOpacity: 0.03,
+  tileOpacity: 0.0,
 );

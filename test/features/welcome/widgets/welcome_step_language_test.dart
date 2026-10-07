@@ -169,6 +169,9 @@ void main() {
 
     testWidgets('tapping French selects it and sets tmdbLanguage to fr-FR',
         (WidgetTester tester) async {
+          tester.view.physicalSize = const Size(800, 1600);
+          tester.view.devicePixelRatio = 1.0;
+          addTearDown(tester.view.reset);
       await tester.pumpWidget(createWidget());
       await tester.pump();
 

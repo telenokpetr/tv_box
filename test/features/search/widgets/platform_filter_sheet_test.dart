@@ -60,6 +60,9 @@ void main() {
 
       testWidgets('should show список платформ как ListTile',
           (WidgetTester tester) async {
+            tester.view.physicalSize = const Size(800, 2400);
+            tester.view.devicePixelRatio = 1.0;
+            addTearDown(tester.view.reset);
         await tester.pumpWidget(buildTestWidget());
         await openSheet(tester);
 
@@ -124,6 +127,9 @@ void main() {
 
       testWidgets('должен очищать поиск when pressed кнопки очистки',
           (WidgetTester tester) async {
+            tester.view.physicalSize = const Size(800, 2400);
+            tester.view.devicePixelRatio = 1.0;
+            addTearDown(tester.view.reset);
         await tester.pumpWidget(buildTestWidget());
         await openSheet(tester);
 

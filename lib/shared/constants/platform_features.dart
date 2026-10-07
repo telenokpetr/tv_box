@@ -1,4 +1,5 @@
-import 'package:flutter/widgets.dart' show BuildContext, MediaQuery, Orientation;
+import 'package:flutter/widgets.dart'
+    show BuildContext, MediaQuery, Orientation;
 
 // A conditional import, not `kIsWeb`: only this keeps dart:io out of the web
 // compile. defaultTargetPlatform would also report android in Windows tests.
@@ -52,7 +53,9 @@ bool isCompactScreen(BuildContext context) {
 /// Compact form of a poster card in the library grids. Skeletons read it too,
 /// so a loading placeholder has the same shape as the card replacing it.
 bool useCompactCard(BuildContext context) =>
-    isLandscapeMobile(context) || isCompactScreen(context);
+    (isLandscapeMobile(context) &&
+        MediaQuery.sizeOf(context).width < kDesktopContentBreakpoint) ||
+    isCompactScreen(context);
 
 /// Switches the content layout to its desktop form. Unrelated to the side
 /// menu, which is unified across all widths.

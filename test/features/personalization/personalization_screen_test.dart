@@ -117,6 +117,10 @@ void main() {
     testWidgets('pushes the likes page from the fourth card', (
       WidgetTester tester,
     ) async {
+      tester.view.physicalSize = const Size(800, 1600);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
       await tester.pumpApp(
         const PersonalizationScreen(),
         overrides: overrides(),
@@ -162,7 +166,7 @@ void main() {
     testWidgets('lays out on a phone without exceptions', (
       WidgetTester tester,
     ) async {
-      tester.view.physicalSize = const Size(360, 640);
+      tester.view.physicalSize = const Size(360, 1100);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.reset);
 

@@ -14,14 +14,14 @@ import 'nav_tab.dart';
 import 'nav_tour_keys.dart';
 
 /// Width of the side rail.
-const double kAppSidebarWidth = 64;
+const double kAppSidebarWidth = 176;
 
 /// Maximum height of one tab button. On short screens the buttons shrink
 /// proportionally to stay within the available height.
-const double _kItemHeight = 56;
+const double _kItemHeight = 80;
 
 /// Minimum tab-button height — below this the icon becomes hard to read.
-const double _kItemHeightMin = 36;
+const double _kItemHeightMin = 48;
 
 /// Vertical nav rail for wide screens: icons only, active item marked by a
 /// [LiquidIndicator]. Settings lives in [AppTopBar].
@@ -60,8 +60,9 @@ class AppSidebar extends ConsumerWidget {
       wishlistCount: wishlistCount,
       releasesTodayCount: ref.watch(releasesTodayCountProvider),
     );
-    final int selectedIndex =
-        destinations.indexWhere((NavDestination d) => d.tab == selectedTab);
+    final int selectedIndex = destinations.indexWhere(
+      (NavDestination d) => d.tab == selectedTab,
+    );
 
     return SizedBox(
       width: kAppSidebarWidth,
@@ -85,8 +86,10 @@ class AppSidebar extends ConsumerWidget {
                 final int slotCount = destinations.length + 1;
                 // Shrink button height when the screen is shorter than ideal,
                 // but never below the minimum or the icons blur together.
-                final double itemHeight = (c.maxHeight / slotCount)
-                    .clamp(_kItemHeightMin, _kItemHeight);
+                final double itemHeight = (c.maxHeight / slotCount).clamp(
+                  _kItemHeightMin,
+                  _kItemHeight,
+                );
                 final double totalHeight = itemHeight * slotCount;
                 final int selectedSlot = navSelectedSlot(
                   selectedIndex: selectedIndex,
@@ -109,9 +112,14 @@ class AppSidebar extends ConsumerWidget {
                         ),
                         Column(
                           children: <Widget>[
-                            for (int i = 0; i < destinations.length; i++) ...<Widget>[
+                            for (
+                              int i = 0;
+                              i < destinations.length;
+                              i++
+                            ) ...<Widget>[
                               if (i == kNavCenterSlot)
                                 NavCenterButton(
+                                  active: centerActive,
                                   key: tourActive
                                       ? tourKeys.personalization
                                       : null,
@@ -121,11 +129,13 @@ class AppSidebar extends ConsumerWidget {
                                   onTap: onCenterTap,
                                 ),
                               NavIconButton(
+                                autofocus: destinations[i].tab == selectedTab,
                                 key: tourActive
                                     ? tourKeys.keyFor(destinations[i].tab)
                                     : null,
                                 destination: destinations[i],
-                                active: !centerActive &&
+                                active:
+                                    !centerActive &&
                                     destinations[i].tab == selectedTab,
                                 width: kAppSidebarWidth,
                                 height: itemHeight,

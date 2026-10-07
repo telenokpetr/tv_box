@@ -165,7 +165,7 @@ void main() {
         final SettingsState updated = original.copyWith(cardScale: 1.2);
 
         expect(updated.cardScale, equals(1.2));
-        expect(original.cardScale, equals(1.0));
+        expect(original.cardScale, equals(SettingsKeys.cardScaleDefault));
       });
 
       test('copyWith без cardScale сохраняет текущее значение', () {
