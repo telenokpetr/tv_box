@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:tonkatsu_box/features/watch/stream_resolver.dart';
@@ -22,44 +24,91 @@ void main() {
     });
   });
 
-  group('youtubeCookieArgs', () {
-    test('prefers the saved cookie file over the browser', () {
-      final List<String> args = youtubeCookieArgs(
-        'vivaldi',
-        env,
-        exists: (String f) => true,
-      );
-      expect(args.first, '--cookies');
-      expect(args.last, youtubeCookiesPath(env));
-      expect(args, isNot(contains('--cookies-from-browser')));
+  group('withYoutubeCookies', () {
+    late Directory appData;
+    late Map<String, String> tempEnv;
+    late File master;
+
+    setUp(() {
+      appData = Directory.systemTemp.createTempSync('yt_cookies_');
+      tempEnv = <String, String>{'APPDATA': appData.path};
+      master = File(youtubeCookiesPath(tempEnv));
+      master.parent.createSync(recursive: true);
     });
 
-    test('falls back to the browser store without a saved file', () {
+    tearDown(() => appData.deleteSync(recursive: true));
+
+    test('no saved login means no cookie arguments', () async {
+      List<String>? seen;
+      await withYoutubeCookies<void>(tempEnv, (List<String> args) async {
+        seen = args;
+      });
+      expect(seen, isEmpty);
+    });
+
+    test('runs on a private copy, not on the saved file', () async {
+      master.writeAsStringSync('# Netscape HTTP Cookie File\nold\n');
+      List<String>? seen;
+      await withYoutubeCookies<void>(tempEnv, (List<String> args) async {
+        seen = args;
+      });
+      expect(seen?.first, '--cookies');
+      expect(seen?.last, isNot(master.path));
+      expect(File(seen?.last ?? '').existsSync(), isFalse);
+    });
+
+    test('a refreshed copy replaces the saved file', () async {
+      master.writeAsStringSync('# Netscape HTTP Cookie File\nold\n');
+      await withYoutubeCookies<void>(tempEnv, (List<String> args) async {
+        File(
+          args.last,
+        ).writeAsStringSync('# Netscape HTTP Cookie File\nrotated\n');
+      });
+      expect(master.readAsStringSync(), contains('rotated'));
+    });
+
+    test('a copy that came back torn is thrown away', () async {
+      master.writeAsStringSync('# Netscape HTTP Cookie File\nold\n');
+      await withYoutubeCookies<void>(tempEnv, (List<String> args) async {
+        File(args.last).writeAsStringSync('');
+      });
+      expect(master.readAsStringSync(), contains('old'));
       expect(
-        youtubeCookieArgs('vivaldi', env, exists: (String f) => false),
-        <String>['--cookies-from-browser', 'vivaldi'],
+        master.parent.listSync().whereType<File>().map((File f) => f.path),
+        <String>[master.path],
       );
     });
 
-    test('no browser and no file means no cookie arguments', () {
-      expect(youtubeCookieArgs('', env, exists: (String f) => false), isEmpty);
+    test('a failing run still cleans up its copy', () async {
+      master.writeAsStringSync('# Netscape HTTP Cookie File\nold\n');
+      await expectLater(
+        withYoutubeCookies<void>(tempEnv, (List<String> args) async {
+          throw StateError('yt-dlp died');
+        }),
+        throwsStateError,
+      );
+      expect(master.parent.listSync().whereType<File>(), hasLength(1));
     });
   });
 
-  group('isBrowserLocked', () {
-    test('recognizes the yt-dlp message for a cookie store in use', () {
+  group('isReconnectNeeded', () {
+    test('recognizes the messages YouTube gives for a dead login', () {
       expect(
-        isBrowserLocked(
-          'ERROR: Could not copy Chrome cookie database. See https://x',
+        isReconnectNeeded(
+          'ERROR: The provided YouTube account cookies are no longer valid.',
         ),
         isTrue,
       );
-      expect(isBrowserLocked('the cookie database is locked'), isTrue);
+      expect(isReconnectNeeded('Sign in to confirm you are not a bot'), isTrue);
+      expect(isReconnectNeeded('This video requires login'), isTrue);
     });
 
-    test('other failures are not a locked browser', () {
-      expect(isBrowserLocked('Sign in to confirm you are not a bot'), isFalse);
-      expect(isBrowserLocked(''), isFalse);
+    test('network failures are not a dead login', () {
+      expect(
+        isReconnectNeeded('Unable to download webpage: timed out'),
+        isFalse,
+      );
+      expect(isReconnectNeeded(''), isFalse);
     });
   });
 }

@@ -146,12 +146,6 @@ class _WatchSettingsScreenState extends ConsumerState<WatchSettingsScreen> {
                         onChanged: notifier.setTwitchClientSecret,
                       ),
                       _field(
-                        label: l.watchYoutubeBrowser,
-                        value: settings.youtubeBrowser,
-                        placeholder: kDefaultYoutubeBrowser,
-                        onChanged: notifier.setYoutubeBrowser,
-                      ),
-                      _field(
                         label: l.watchIptvUrl,
                         value: settings.iptvUrl,
                         placeholder: 'https://…/playlist.m3u',

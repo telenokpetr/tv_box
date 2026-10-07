@@ -3,118 +3,23 @@ import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:path/path.dart' as p;
-import 'package:url_launcher/url_launcher.dart';
 
-import '../settings/providers/watch_settings_provider.dart';
 import 'stream_resolver.dart';
-
-/// Where each browser's executable usually lives, relative to the install
-/// roots below; only browsers whose cookies yt-dlp can read are listed.
-const Map<String, List<List<String>>> kBrowserPaths =
-    <String, List<List<String>>>{
-      'vivaldi': <List<String>>[
-        <String>['Vivaldi', 'Application', 'vivaldi.exe'],
-      ],
-      'chrome': <List<String>>[
-        <String>['Google', 'Chrome', 'Application', 'chrome.exe'],
-      ],
-      'edge': <List<String>>[
-        <String>['Microsoft', 'Edge', 'Application', 'msedge.exe'],
-      ],
-      'firefox': <List<String>>[
-        <String>['Mozilla Firefox', 'firefox.exe'],
-      ],
-      'brave': <List<String>>[
-        <String>['BraveSoftware', 'Brave-Browser', 'Application', 'brave.exe'],
-      ],
-      'opera': <List<String>>[
-        <String>['Opera', 'opera.exe'],
-        <String>['Opera GX', 'opera.exe'],
-      ],
-    };
-
-const String kYoutubeUrl = 'https://www.youtube.com/';
-
-/// The browser's executable, looked up in Program Files and the per-user
-/// install folders; null for an unknown browser or one that is not installed.
-String? findBrowser(
-  String browser,
-  Map<String, String> environment, {
-  bool Function(String path) exists = _exists,
-}) {
-  final List<List<String>>? suffixes = kBrowserPaths[browser.toLowerCase()];
-  if (suffixes == null) return null;
-  final List<String> roots = <String>[
-    for (final String key in <String>[
-      'LOCALAPPDATA',
-      'ProgramFiles',
-      'ProgramFiles(x86)',
-    ])
-      if (environment[key] case final String dir when dir.isNotEmpty) dir,
-    if (environment['LOCALAPPDATA'] case final String dir when dir.isNotEmpty)
-      p.join(dir, 'Programs'),
-  ];
-  for (final String root in roots) {
-    for (final List<String> suffix in suffixes) {
-      final String candidate = p.joinAll(<String>[root, ...suffix]);
-      if (exists(candidate)) return candidate;
-    }
-  }
-  return null;
-}
-
-bool _exists(String path) => File(path).existsSync();
-
-/// Opens YouTube in the browser whose login the app reads, so the user can
-/// sign in there once; falls back to the default browser.
-Future<void> openYoutubeSignIn(String browser) async {
-  final String? exe = findBrowser(browser, Platform.environment);
-  if (exe != null) {
-    await Process.start(exe, <String>[
-      kYoutubeUrl,
-    ], mode: ProcessStartMode.detached);
-    return;
-  }
-  await launchUrl(Uri.parse(kYoutubeUrl));
-}
+import 'youtube_cookies_export.dart';
 
 final Logger _fileLog = Logger('YoutubeConnect');
 
-/// Reads the browser's YouTube login once and keeps it in the app's own
-/// folder. Fails with a readable message when the browser is still open.
-Future<void> connectYoutube(String browser) async {
-  final String? exe = findTool(kYtDlp, Platform.environment);
-  if (exe == null) {
-    throw const YoutubeFeedException(
-      'yt-dlp is not installed',
-      missingTool: kYtDlp,
-    );
+/// Keeps the YouTube login of the embedded browser (the JSON of its cookies)
+/// in the app's own folder, where yt-dlp reads it from afterwards.
+Future<void> saveYoutubeCookies(String cookiesJson) async {
+  final List<BrowserCookie> cookies = parseBrowserCookies(cookiesJson);
+  if (!hasYoutubeLogin(cookies)) {
+    throw const YoutubeFeedException('the browser is not signed in to YouTube');
   }
-  final String file = youtubeCookiesPath(Platform.environment);
-  Directory(p.dirname(file)).createSync(recursive: true);
-  final ProcessResult result = await Process.run(
-    exe,
-    <String>[
-      '--cookies-from-browser',
-      browser,
-      '--cookies',
-      file,
-      '--simulate',
-      '--playlist-end',
-      '1',
-      ':ytsubs',
-    ],
-    stdoutEncoding: utf8,
-    stderrEncoding: utf8,
-  ).timeout(_kFeedTimeout);
-  final String err = '${result.stderr}'.trim();
-  if (!File(file).existsSync() || File(file).lengthSync() == 0) {
-    throw YoutubeFeedException(
-      err.isEmpty ? 'no cookies were saved' : err.split('\n').last,
-    );
-  }
-  _fileLog.info('youtube account connected via $browser');
+  final File file = File(youtubeCookiesPath(Platform.environment));
+  file.parent.createSync(recursive: true);
+  await file.writeAsString(toNetscapeCookies(cookies));
+  _fileLog.info('youtube account saved: ${cookies.length} cookies');
 }
 
 void disconnectYoutube() {
@@ -125,14 +30,21 @@ void disconnectYoutube() {
 bool youtubeConnectedToFile() =>
     File(youtubeCookiesPath(Platform.environment)).existsSync();
 
-/// The browser is holding its cookie store open.
-bool isBrowserLocked(String message) =>
-    message.contains('Could not copy') || message.contains('cookie database');
+/// YouTube has stopped honouring the saved login, or there is none.
+bool isReconnectNeeded(String message) {
+  final String text = message.toLowerCase();
+  return text.contains('no longer valid') ||
+      text.contains('sign in') ||
+      text.contains('log in') ||
+      text.contains('login') ||
+      text.contains('cookies') ||
+      text.contains('not signed in');
+}
 
 const int _kFeedSize = 48;
 const Duration _kFeedTimeout = Duration(seconds: 90);
 
-/// The personal feeds yt-dlp can read with a browser's YouTube login.
+/// The personal feeds yt-dlp can read with the account's login.
 enum YoutubeFeed {
   subscriptions(':ytsubs'),
   recommended(':ytrec'),
@@ -202,14 +114,14 @@ class YoutubeFeedException implements Exception {
   String toString() => 'YoutubeFeedException: $message';
 }
 
-/// Reads a feed of the user's own account through the browser's cookies;
-/// no password ever passes through the app.
+/// Reads a feed of the user's own account through the saved login; no
+/// password ever passes through the app.
 class YoutubeFeedApi {
   const YoutubeFeedApi();
 
   static final Logger _log = Logger('YoutubeFeedApi');
 
-  Future<List<YoutubeVideo>> fetch(YoutubeFeed feed, String browser) async {
+  Future<List<YoutubeVideo>> fetch(YoutubeFeed feed) async {
     final String? exe = findTool(kYtDlp, Platform.environment);
     if (exe == null) {
       throw const YoutubeFeedException(
@@ -218,20 +130,23 @@ class YoutubeFeedApi {
       );
     }
     final String? deno = findTool(kDeno, Platform.environment);
-    final ProcessResult result = await Process.run(
-      exe,
-      <String>[
-        if (deno != null) ...<String>['--js-runtimes', 'deno:$deno'],
-        ...youtubeCookieArgs(browser, Platform.environment),
-        '--flat-playlist',
-        '--playlist-end',
-        '$_kFeedSize',
-        '-J',
-        feed.selector,
-      ],
-      stdoutEncoding: utf8,
-      stderrEncoding: utf8,
-    ).timeout(_kFeedTimeout);
+    final ProcessResult result = await withYoutubeCookies<ProcessResult>(
+      Platform.environment,
+      (List<String> cookieArgs) => Process.run(
+        exe,
+        <String>[
+          if (deno != null) ...<String>['--js-runtimes', 'deno:$deno'],
+          ...cookieArgs,
+          '--flat-playlist',
+          '--playlist-end',
+          '$_kFeedSize',
+          '-J',
+          feed.selector,
+        ],
+        stdoutEncoding: utf8,
+        stderrEncoding: utf8,
+      ).timeout(_kFeedTimeout),
+    );
     final String out = '${result.stdout}'.trim();
     if (result.exitCode != 0 || !out.startsWith('{')) {
       final String err = '${result.stderr}'.trim();
@@ -252,8 +167,5 @@ class YoutubeFeedApi {
 final AutoDisposeFutureProviderFamily<List<YoutubeVideo>, YoutubeFeed>
 youtubeFeedProvider = FutureProvider.autoDispose
     .family<List<YoutubeVideo>, YoutubeFeed>(
-      (Ref ref, YoutubeFeed feed) => const YoutubeFeedApi().fetch(
-        feed,
-        ref.watch(watchSettingsProvider).youtubeBrowser,
-      ),
+      (Ref ref, YoutubeFeed feed) => const YoutubeFeedApi().fetch(feed),
     );

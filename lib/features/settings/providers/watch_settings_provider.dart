@@ -21,9 +21,6 @@ abstract class WatchSettingsKeys {
 
   static String iptvUrl(String profileId) => 'watch_iptv_url_$profileId';
 
-  static String youtubeBrowser(String profileId) =>
-      'watch_youtube_browser_$profileId';
-
   static String twitchClientId(String profileId) =>
       'watch_twitch_client_id_$profileId';
 
@@ -40,7 +37,6 @@ enum WatchPlayer { auto, mpcBe, mpcHc, vlc, builtIn }
 const String kDefaultJacRedUrl = 'http://127.0.0.1:9117';
 const String kDefaultTorrServerUrl = 'http://127.0.0.1:8090';
 const String kDefaultCatalogUrl = 'http://127.0.0.1:8099/catalog.json';
-const String kDefaultYoutubeBrowser = 'vivaldi';
 
 class WatchSettingsState {
   const WatchSettingsState({
@@ -50,7 +46,6 @@ class WatchSettingsState {
     this.player = WatchPlayer.builtIn,
     this.catalogUrl = '',
     this.iptvUrl = '',
-    this.youtubeBrowser = kDefaultYoutubeBrowser,
     this.twitchClientId = '',
     this.twitchClientSecret = '',
   });
@@ -63,9 +58,6 @@ class WatchSettingsState {
 
   /// A personal m3u playlist (an IPTV account); empty means the free list.
   final String iptvUrl;
-
-  /// The browser whose YouTube login yt-dlp reads (`vivaldi`, `chrome`, ...).
-  final String youtubeBrowser;
 
   /// Keys of the user's own Twitch application (dev.twitch.tv/console).
   final String twitchClientId;
@@ -83,7 +75,6 @@ class WatchSettingsState {
     WatchPlayer? player,
     String? catalogUrl,
     String? iptvUrl,
-    String? youtubeBrowser,
     String? twitchClientId,
     String? twitchClientSecret,
   }) {
@@ -94,7 +85,6 @@ class WatchSettingsState {
       player: player ?? this.player,
       catalogUrl: catalogUrl ?? this.catalogUrl,
       iptvUrl: iptvUrl ?? this.iptvUrl,
-      youtubeBrowser: youtubeBrowser ?? this.youtubeBrowser,
       twitchClientId: twitchClientId ?? this.twitchClientId,
       twitchClientSecret: twitchClientSecret ?? this.twitchClientSecret,
     );
@@ -133,9 +123,6 @@ class WatchSettingsNotifier extends Notifier<WatchSettingsState> {
           _prefs.getString(WatchSettingsKeys.catalogUrl(_profileId)) ??
           _defaultFor(kDefaultCatalogUrl),
       iptvUrl: _prefs.getString(WatchSettingsKeys.iptvUrl(_profileId)) ?? '',
-      youtubeBrowser:
-          _prefs.getString(WatchSettingsKeys.youtubeBrowser(_profileId)) ??
-          kDefaultYoutubeBrowser,
       twitchClientId:
           _prefs.getString(WatchSettingsKeys.twitchClientId(_profileId)) ?? '',
       twitchClientSecret:
@@ -184,16 +171,6 @@ class WatchSettingsNotifier extends Notifier<WatchSettingsState> {
     final String url = value.trim();
     await _prefs.setString(WatchSettingsKeys.iptvUrl(_profileId), url);
     state = state.copyWith(iptvUrl: url);
-  }
-
-  Future<void> setYoutubeBrowser(String value) async {
-    final String browser = value.trim().toLowerCase();
-    final String stored = browser.isEmpty ? kDefaultYoutubeBrowser : browser;
-    await _prefs.setString(
-      WatchSettingsKeys.youtubeBrowser(_profileId),
-      stored,
-    );
-    state = state.copyWith(youtubeBrowser: stored);
   }
 
   Future<void> setTwitchClientId(String value) async {

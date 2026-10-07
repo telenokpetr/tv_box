@@ -101,6 +101,10 @@ dependencies:
 dependency_overrides:
   gamepads_windows:
     path: packages/gamepads_windows_stub
+  # Adds getCookies(): the YouTube sign-in needs the HttpOnly cookies of the
+  # embedded browser, which no released version exposes.
+  webview_windows:
+    path: packages/webview_windows
 
 dev_dependencies:
   flutter_test:

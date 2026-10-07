@@ -13,6 +13,7 @@ import '../providers/watch_providers.dart';
 import '../stream_resolver.dart';
 import '../watch_format.dart';
 import '../youtube_feed.dart';
+import 'youtube_signin_page.dart';
 
 const Duration _kErrorSnack = Duration(seconds: 8);
 
@@ -77,7 +78,7 @@ class _LivePanelState extends ConsumerState<LivePanel> {
           .resolve(
             widget.service,
             input,
-            cookiesBrowser: ref.read(watchSettingsProvider).youtubeBrowser,
+            useAccount: youtubeConnectedToFile(),
           );
       if (!mounted) return;
       await playStream(context, ref, url: url, title: title ?? input);
@@ -393,7 +394,6 @@ class _YoutubeFeedGrid extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final S l = S.of(context);
-    final String browser = ref.watch(watchSettingsProvider).youtubeBrowser;
     return ref
         .watch(youtubeFeedProvider(feed))
         .when(
@@ -415,23 +415,7 @@ class _YoutubeFeedGrid extends ConsumerWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Text(
-                  error is YoutubeFeedException && error.missingTool != null
-                      ? l.liveToolMissing(
-                          error.missingTool?.name ?? '',
-                          error.missingTool?.wingetId ?? '',
-                        )
-                      : error is YoutubeFeedException &&
-                            isBrowserLocked(error.message)
-                      ? l.ytCloseBrowser(browser)
-                      : l.ytFeedFailed(
-                          browser,
-                          error is YoutubeFeedException
-                              ? error.message
-                              : '$error',
-                        ),
-                  textAlign: TextAlign.center,
-                ),
+                Text(_errorText(l, error), textAlign: TextAlign.center),
                 const SizedBox(height: 16),
                 Wrap(
                   spacing: 12,
@@ -441,15 +425,10 @@ class _YoutubeFeedGrid extends ConsumerWidget {
                       style: FilledButton.styleFrom(
                         minimumSize: const Size(0, 40),
                       ),
-                      onPressed: () => _connect(context, ref, browser),
-                      child: Text(l.ytConnect),
-                    ),
-                    OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(0, 40),
+                      onPressed: () => _signIn(context, ref),
+                      child: Text(
+                        youtubeConnectedToFile() ? l.ytReconnect : l.ytConnect,
                       ),
-                      onPressed: () => openYoutubeSignIn(browser),
-                      child: Text(l.ytSignIn),
                     ),
                     OutlinedButton(
                       style: OutlinedButton.styleFrom(
@@ -466,27 +445,25 @@ class _YoutubeFeedGrid extends ConsumerWidget {
           ),
         );
   }
+
+  String _errorText(S l, Object error) {
+    if (error is! YoutubeFeedException) return l.ytFeedFailedPlain('$error');
+    final LiveTool? tool = error.missingTool;
+    if (tool != null) return l.liveToolMissing(tool.name, tool.wingetId);
+    if (!youtubeConnectedToFile()) return l.ytNotConnectedNow;
+    return isReconnectNeeded(error.message)
+        ? l.ytReconnectNeeded
+        : l.ytFeedFailedPlain(error.message);
+  }
 }
 
-Future<void> _connect(
-  BuildContext context,
-  WidgetRef ref,
-  String browser,
-) async {
-  final S l = S.of(context);
-  try {
-    await connectYoutube(browser);
-    ref.invalidate(youtubeFeedProvider);
-  } on YoutubeFeedException catch (e) {
-    if (!context.mounted) return;
-    context.showSnack(
-      isBrowserLocked(e.message)
-          ? l.ytCloseBrowser(browser)
-          : l.ytFeedFailed(browser, e.message),
-      type: SnackType.error,
-      duration: const Duration(seconds: 10),
-    );
-  }
+Future<void> _signIn(BuildContext context, WidgetRef ref) async {
+  final bool? connected = await Navigator.of(context).push<bool>(
+    MaterialPageRoute<bool>(
+      builder: (BuildContext context) => const YoutubeSignInPage(),
+    ),
+  );
+  if (connected == true) ref.invalidate(youtubeFeedProvider);
 }
 
 /// Whether the account is connected, read off the feed that is showing.
@@ -498,16 +475,14 @@ class _YoutubeStatus extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final S l = S.of(context);
-    final String browser = ref.watch(watchSettingsProvider).youtubeBrowser;
     final AsyncValue<List<YoutubeVideo>> state = ref.watch(
       youtubeFeedProvider(feed),
     );
     final (IconData, Color, String) view = state.when(
-      data: (_) =>
-          (Icons.check_circle, Colors.greenAccent, l.ytConnected(browser)),
+      data: (_) => (Icons.check_circle, Colors.greenAccent, l.ytConnectedNow),
       loading: () => (Icons.sync, Colors.white54, l.ytChecking),
       error: (Object e, StackTrace s) =>
-          (Icons.error_outline, Colors.orangeAccent, l.ytNotConnected(browser)),
+          (Icons.error_outline, Colors.orangeAccent, l.ytNotConnectedNow),
     );
     return Row(
       children: <Widget>[

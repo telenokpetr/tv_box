@@ -26,8 +26,7 @@ const LiveTool kStreamlink = LiveTool(
 /// on PATH, which a freshly installed one may not be on yet.
 const LiveTool kDeno = LiveTool('deno.exe', 'DenoLand.Deno');
 
-/// Where "Connect account" stores the YouTube login the app reads afterwards,
-/// so the browser may stay open: Windows locks a running browser's cookies.
+/// Where "Connect account" keeps the YouTube login the embedded browser made.
 String youtubeCookiesPath(Map<String, String> environment) => p.join(
   environment['APPDATA'] ?? '',
   'Tonkatsu Box',
@@ -35,18 +34,39 @@ String youtubeCookiesPath(Map<String, String> environment) => p.join(
   'youtube_cookies.txt',
 );
 
-/// yt-dlp arguments that carry the user's YouTube login: the saved cookie file
-/// if there is one, otherwise the browser's own store.
-List<String> youtubeCookieArgs(
-  String browser,
-  Map<String, String> environment, {
-  bool Function(String path) exists = _fileExists,
-}) {
-  final String file = youtubeCookiesPath(environment);
-  if (exists(file)) return <String>['--cookies', file];
-  return browser.isEmpty
-      ? const <String>[]
-      : <String>['--cookies-from-browser', browser];
+final Logger _cookieLog = Logger('YoutubeCookies');
+int _copyCounter = 0;
+
+/// yt-dlp rewrites the cookie file it is given, YouTube rotates the login in
+/// it, and two runs at once would tear the file. So each run gets its own copy
+/// and the saved file is replaced only by a copy that came back whole.
+Future<T> withYoutubeCookies<T>(
+  Map<String, String> environment,
+  Future<T> Function(List<String> cookieArgs) run,
+) async {
+  final File master = File(youtubeCookiesPath(environment));
+  if (!master.existsSync()) return run(const <String>[]);
+  final File copy = File('${master.path}.${pid}_${_copyCounter++}.tmp');
+  master.copySync(copy.path);
+  try {
+    return await run(<String>['--cookies', copy.path]);
+  } finally {
+    _keepRotatedCookies(copy, master);
+  }
+}
+
+void _keepRotatedCookies(File copy, File master) {
+  try {
+    if (copy.existsSync() &&
+        copy.lengthSync() > 0 &&
+        copy.readAsStringSync().startsWith('# Netscape')) {
+      copy.renameSync(master.path);
+    } else if (copy.existsSync()) {
+      copy.deleteSync();
+    }
+  } on FileSystemException catch (e) {
+    _cookieLog.warning('could not store the refreshed YouTube login: $e');
+  }
 }
 
 const Duration _kResolveTimeout = Duration(seconds: 60);
@@ -136,33 +156,29 @@ class StreamResolver {
 
   static final Logger _log = Logger('StreamResolver');
 
-  /// [cookiesBrowser] lets yt-dlp use that browser's YouTube login (age gates,
-  /// private videos); if reading it fails the plain call is tried once.
+  /// [useAccount] lets yt-dlp use the connected YouTube account (age gates,
+  /// private videos); if that fails the plain call is tried once.
   Future<String> resolve(
     LiveService service,
     String input, {
-    String? cookiesBrowser,
+    bool useAccount = false,
   }) async {
-    final bool withCookies =
-        service == LiveService.youtube &&
-        cookiesBrowser != null &&
-        cookiesBrowser.isNotEmpty;
-    if (withCookies) {
+    if (service == LiveService.youtube && useAccount) {
       try {
-        return await _resolve(service, input, cookiesBrowser);
+        return await _resolve(service, input, withAccount: true);
       } on StreamResolveException catch (e) {
         if (e.missingTool != null) rethrow;
-        _log.warning('retrying without cookies: ${e.message}');
+        _log.warning('retrying without the account: ${e.message}');
       }
     }
-    return _resolve(service, input, null);
+    return _resolve(service, input, withAccount: false);
   }
 
   Future<String> _resolve(
     LiveService service,
-    String input,
-    String? cookiesBrowser,
-  ) async {
+    String input, {
+    required bool withAccount,
+  }) async {
     final LiveTool tool = toolFor(service);
     final String? exe = findTool(tool, Platform.environment);
     if (exe == null) {
@@ -173,11 +189,11 @@ class StreamResolver {
     }
     final String url = normalizeLiveInput(service, input);
     final String? deno = findTool(kDeno, Platform.environment);
-    final List<String> args = service == LiveService.youtube
+    List<String> argsWith(List<String> cookieArgs) =>
+        service == LiveService.youtube
         ? <String>[
             if (deno != null) ...<String>['--js-runtimes', 'deno:$deno'],
-            if (cookiesBrowser != null)
-              ...youtubeCookieArgs(cookiesBrowser, Platform.environment),
+            ...cookieArgs,
             '-g',
             '-f',
             'b/best',
@@ -186,10 +202,18 @@ class StreamResolver {
           ]
         : <String>['--stream-url', url, 'best'];
     _log.info('resolving ${tool.name} $url');
-    final ProcessResult result = await Process.run(
-      exe,
-      args,
-    ).timeout(_kResolveTimeout);
+    final ProcessResult result = withAccount
+        ? await withYoutubeCookies<ProcessResult>(
+            Platform.environment,
+            (List<String> cookieArgs) => Process.run(
+              exe,
+              argsWith(cookieArgs),
+            ).timeout(_kResolveTimeout),
+          )
+        : await Process.run(
+            exe,
+            argsWith(const <String>[]),
+          ).timeout(_kResolveTimeout);
     final String out = '${result.stdout}'.trim();
     final String line = out.split('\n').first.trim();
     if (result.exitCode != 0 || !line.startsWith('http')) {
