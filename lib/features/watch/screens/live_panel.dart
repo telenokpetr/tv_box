@@ -279,7 +279,7 @@ class _TwitchBrowseState extends ConsumerState<_TwitchBrowse> {
                     : GridView.builder(
                         gridDelegate:
                             const SliverGridDelegateWithMaxCrossAxisExtent(
-                              maxCrossAxisExtent: 280,
+                              maxCrossAxisExtent: 340,
                               mainAxisSpacing: 16,
                               crossAxisSpacing: 16,
                               childAspectRatio: 1.05,
@@ -353,7 +353,7 @@ class _KickBrowseState extends ConsumerState<_KickBrowse> {
                     : GridView.builder(
                         gridDelegate:
                             const SliverGridDelegateWithMaxCrossAxisExtent(
-                              maxCrossAxisExtent: 280,
+                              maxCrossAxisExtent: 340,
                               mainAxisSpacing: 16,
                               crossAxisSpacing: 16,
                               childAspectRatio: 1.05,
@@ -463,20 +463,20 @@ class _StreamCard extends StatelessWidget {
             name,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
           ),
           Text(
             title,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 12, color: Colors.white70),
+            style: const TextStyle(fontSize: 15, color: Colors.white70),
           ),
           if (game != null)
             Text(
               game ?? '',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 12, color: Colors.white54),
+              style: const TextStyle(fontSize: 15, color: Colors.white54),
             ),
         ],
       ),
@@ -500,7 +500,7 @@ class _YoutubeFeedGrid extends ConsumerWidget {
               ? Center(child: Text(l.catalogEmpty))
               : GridView.builder(
                   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 260,
+                    maxCrossAxisExtent: 320,
                     mainAxisSpacing: 16,
                     crossAxisSpacing: 16,
                     childAspectRatio: 1.25,
@@ -587,7 +587,7 @@ class _YoutubeStatus extends ConsumerWidget {
       children: <Widget>[
         Icon(view.$1, size: 18, color: view.$2),
         const SizedBox(width: 8),
-        Text(view.$3, style: const TextStyle(fontSize: 13)),
+        Text(view.$3, style: const TextStyle(fontSize: 17)),
         if (youtubeConnectedToFile())
           TextButton(
             onPressed: () {
@@ -661,14 +661,14 @@ class _VideoCard extends StatelessWidget {
             video.title,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
           ),
           if (video.channel != null)
             Text(
               video.channel ?? '',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 12, color: Colors.white54),
+              style: const TextStyle(fontSize: 15, color: Colors.white54),
             ),
         ],
       ),

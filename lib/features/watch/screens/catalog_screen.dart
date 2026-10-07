@@ -20,28 +20,32 @@ import '../providers/watch_providers.dart';
 import '../watch_query.dart';
 import 'watch_screen.dart';
 
-// Windows 11 dark palette and type: the catalog deliberately looks like a
-// Windows app rather than the rest of Tonkatsu Box.
+// The TV look of the app: a graphite background, a light blue accent and large
+// type, readable from across a room. Everything can be reached with the arrow
+// keys and OK, and the focused item always shows a frame.
 const String _kFont = 'Segoe UI';
-const Color _kBackground = Color(0xFF202020);
-const Color _kLayer = Color(0xFF2B2B2B);
-const Color _kStroke = Color(0xFF3A3A3A);
-const Color _kHover = Color(0x0FFFFFFF);
-const Color _kSelected = Color(0x14FFFFFF);
-const Color _kAccent = Color(0xFF60CDFF);
+const Color _kBackground = Color(0xFF101318);
+const Color _kLayer = Color(0xFF191E26);
+const Color _kStroke = Color(0xFF364150);
+const Color _kHover = Color(0x14FFFFFF);
+const Color _kSelected = Color(0x1F8BB8FF);
+const Color _kAccent = Color(0xFF8BB8FF);
 const Color _kTextPrimary = Color(0xFFFFFFFF);
-const Color _kTextSecondary = Color(0xC5FFFFFF);
-const Color _kTextTertiary = Color(0x8BFFFFFF);
+const Color _kTextSecondary = Color(0xFFC0CAD7);
+const Color _kTextTertiary = Color(0xFF94A3B8);
 
-const double _kCornerRadius = 8;
-const double _kRailWidth = 260;
-const double _kRailCompactWidth = 56;
-const double _kRailBreakpoint = 760;
-const double _kCardWidth = 160;
-const double _kGridGap = 16;
-const double _kChannelWidth = 190;
+const double _kCornerRadius = 12;
+const double _kRailWidth = 320;
+const double _kRailCompactWidth = 80;
+const double _kRailBreakpoint = 900;
+const double _kRailItemHeight = 56;
+const double _kFocusWidth = 3;
+const double _kCardWidth = 220;
+const double _kGridGap = 24;
+const double _kChannelWidth = 250;
 const double _kChannelAspect = 1.05;
 const Duration _kHoverDuration = Duration(milliseconds: 120);
+const Duration _kScrollToFocus = Duration(milliseconds: 160);
 
 /// Rail sections; a divider is drawn between groups.
 final List<List<String>> _kRailGroups = <List<String>>[
@@ -391,30 +395,38 @@ class _RailItem extends StatefulWidget {
 
 class _RailItemState extends State<_RailItem> {
   bool _hover = false;
+  bool _focus = false;
+
+  void _onFocusChange(bool focused) {
+    // The rail scrolls: a key press must never leave the focus out of sight.
+    if (focused) {
+      Scrollable.ensureVisible(context, duration: _kScrollToFocus);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final Color fill = widget.selected
         ? _kSelected
-        : _hover
+        : _hover || _focus
         ? _kHover
         : Colors.transparent;
     final Widget row = Row(
       children: <Widget>[
-        // The accent pill is Windows' mark of the current page.
+        // The accent pill marks the current page.
         AnimatedContainer(
           duration: _kHoverDuration,
-          width: 3,
-          height: widget.selected ? 16 : 0,
+          width: 4,
+          height: widget.selected ? 26 : 0,
           decoration: BoxDecoration(
             color: _kAccent,
             borderRadius: BorderRadius.circular(2),
           ),
         ),
-        const SizedBox(width: 10),
-        Icon(widget.icon, size: 18, color: _kTextPrimary),
+        const SizedBox(width: 14),
+        Icon(widget.icon, size: 26, color: _kTextPrimary),
         if (!widget.compact) ...<Widget>[
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             child: Text(
               widget.label,
@@ -422,17 +434,17 @@ class _RailItemState extends State<_RailItem> {
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 fontFamily: _kFont,
-                fontSize: 14,
+                fontSize: 19,
                 color: _kTextPrimary,
               ),
             ),
           ),
           if (widget.expanded case final bool open)
             Padding(
-              padding: const EdgeInsets.only(right: 10),
+              padding: const EdgeInsets.only(right: 14),
               child: Icon(
                 open ? Icons.expand_less : Icons.expand_more,
-                size: 18,
+                size: 26,
                 color: _kTextTertiary,
               ),
             ),
@@ -440,10 +452,21 @@ class _RailItemState extends State<_RailItem> {
       ],
     );
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 1),
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _hover = true),
-        onExit: (_) => setState(() => _hover = false),
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: FocusableActionDetector(
+        autofocus: widget.selected,
+        mouseCursor: SystemMouseCursors.click,
+        onShowHoverHighlight: (bool v) => setState(() => _hover = v),
+        onShowFocusHighlight: (bool v) => setState(() => _focus = v),
+        onFocusChange: _onFocusChange,
+        actions: <Type, Action<Intent>>{
+          ActivateIntent: CallbackAction<ActivateIntent>(
+            onInvoke: (_) {
+              widget.onTap();
+              return null;
+            },
+          ),
+        },
         child: GestureDetector(
           onTap: widget.onTap,
           behavior: HitTestBehavior.opaque,
@@ -451,10 +474,14 @@ class _RailItemState extends State<_RailItem> {
             message: widget.compact ? widget.label : '',
             child: AnimatedContainer(
               duration: _kHoverDuration,
-              height: 40,
+              height: _kRailItemHeight,
               decoration: BoxDecoration(
                 color: fill,
-                borderRadius: BorderRadius.circular(_kCornerRadius - 2),
+                borderRadius: BorderRadius.circular(_kCornerRadius),
+                border: Border.all(
+                  color: _focus ? _kAccent : Colors.transparent,
+                  width: _kFocusWidth,
+                ),
               ),
               child: row,
             ),
@@ -503,7 +530,7 @@ class _Content extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 fontFamily: _kFont,
-                fontSize: 28,
+                fontSize: 40,
                 fontWeight: FontWeight.w600,
                 color: _kTextPrimary,
               ),
@@ -515,18 +542,18 @@ class _Content extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 420),
+                constraints: const BoxConstraints(maxWidth: 560),
                 child: TextField(
                   controller: controller,
                   textInputAction: TextInputAction.search,
-                  style: const TextStyle(fontFamily: _kFont, fontSize: 14),
+                  style: const TextStyle(fontFamily: _kFont, fontSize: 19),
                   decoration: InputDecoration(
                     isDense: true,
                     hintText: l.catalogSearchHint,
-                    prefixIcon: const Icon(Icons.search, size: 18),
+                    prefixIcon: const Icon(Icons.search, size: 26),
                     suffixIcon: searching
                         ? IconButton(
-                            icon: const Icon(Icons.close, size: 16),
+                            icon: const Icon(Icons.close, size: 22),
                             onPressed: () {
                               controller.clear();
                               onSubmitted('');
@@ -757,7 +784,7 @@ class _Message extends StatelessWidget {
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontFamily: _kFont,
-            fontSize: 14,
+            fontSize: 18,
             color: _kTextSecondary,
           ),
         ),
@@ -811,6 +838,18 @@ class _CatalogCardView extends ConsumerStatefulWidget {
 
 class _CatalogCardViewState extends ConsumerState<_CatalogCardView> {
   bool _hover = false;
+  bool _focus = false;
+
+  void _onFocusChange(bool focused) {
+    // Arrow keys walk the grid: keep the focused card on screen.
+    if (focused) {
+      Scrollable.ensureVisible(
+        context,
+        alignment: 0.5,
+        duration: _kScrollToFocus,
+      );
+    }
+  }
 
   void _open(String title) {
     final CatalogItem item = widget.item;
@@ -853,19 +892,35 @@ class _CatalogCardViewState extends ConsumerState<_CatalogCardView> {
                   m[channelKey(item.title)]?.count ?? 0,
             ),
           );
-    return MouseRegion(
-      onEnter: (_) => setState(() => _hover = true),
-      onExit: (_) => setState(() => _hover = false),
-      cursor: SystemMouseCursors.click,
+    return FocusableActionDetector(
+      mouseCursor: SystemMouseCursors.click,
+      onShowHoverHighlight: (bool v) => setState(() => _hover = v),
+      onShowFocusHighlight: (bool v) => setState(() => _focus = v),
+      onFocusChange: _onFocusChange,
+      actions: <Type, Action<Intent>>{
+        ActivateIntent: CallbackAction<ActivateIntent>(
+          onInvoke: (_) {
+            _open(title);
+            return null;
+          },
+        ),
+      },
       child: GestureDetector(
         onTap: () => _open(title),
         child: AnimatedContainer(
           duration: _kHoverDuration,
-          padding: const EdgeInsets.all(6),
+          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: _hover ? _kHover : Colors.transparent,
+            color: _hover || _focus ? _kHover : Colors.transparent,
             borderRadius: BorderRadius.circular(_kCornerRadius),
-            border: Border.all(color: _hover ? _kStroke : Colors.transparent),
+            border: Border.all(
+              color: _focus
+                  ? _kAccent
+                  : _hover
+                  ? _kStroke
+                  : Colors.transparent,
+              width: _kFocusWidth,
+            ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -890,33 +945,33 @@ class _CatalogCardViewState extends ConsumerState<_CatalogCardView> {
                     ),
                     if (widget.rank != null)
                       Positioned(
-                        left: 6,
-                        top: 6,
+                        left: 8,
+                        top: 8,
                         child: _Badge(text: '${widget.rank}'),
                       ),
                     if (views > 0)
                       Positioned(
-                        left: 6,
-                        top: 6,
+                        left: 8,
+                        top: 8,
                         child: _Badge(text: '\u25B6 $views'),
                       ),
                     if (rating != null && rating > 0)
                       Positioned(
-                        right: 6,
-                        top: 6,
+                        right: 8,
+                        top: 8,
                         child: _Badge(text: rating.toStringAsFixed(1)),
                       ),
                   ],
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
               Text(
                 title,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   fontFamily: _kFont,
-                  fontSize: 13,
+                  fontSize: 17,
                   fontWeight: FontWeight.w600,
                   color: _kTextPrimary,
                 ),
@@ -926,7 +981,7 @@ class _CatalogCardViewState extends ConsumerState<_CatalogCardView> {
                   '${item.year}',
                   style: const TextStyle(
                     fontFamily: _kFont,
-                    fontSize: 12,
+                    fontSize: 15,
                     color: _kTextTertiary,
                   ),
                 ),
@@ -951,13 +1006,13 @@ class _Badge extends StatelessWidget {
         borderRadius: BorderRadius.circular(4),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
         child: Text(
           text,
           style: const TextStyle(
             fontFamily: _kFont,
             color: _kAccent,
-            fontSize: 12,
+            fontSize: 15,
             fontWeight: FontWeight.w600,
           ),
         ),

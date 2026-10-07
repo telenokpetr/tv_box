@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tonkatsu_box/shared/constants/platform_features.dart';
@@ -123,6 +124,56 @@ void main() {
       await tester.tap(find.widgetWithText(ChoiceChip, 'BBC'));
       await tester.pumpAndSettle();
       expect(find.text('Shelf docs:bbc'), findsOneWidget);
+    });
+
+    testWidgets('the rail can be driven with the arrow keys and OK', (
+      WidgetTester tester,
+    ) async {
+      await pumpAt(tester, const Size(1400, 2400));
+
+      // The first rail item starts focused; Down walks to the next ones.
+      for (int i = 0; i < 4; i++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+        await tester.pump();
+      }
+      await tester.sendKeyEvent(LogicalKeyboardKey.select);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Shelf recs'), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('OK on a focused rail item opens that shelf', (
+      WidgetTester tester,
+    ) async {
+      await pumpAt(tester, const Size(1400, 2400));
+
+      final BuildContext item = tester.element(
+        find.byIcon(Icons.history).first,
+      );
+      Focus.of(item).requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Shelf old_cartoons'), findsOneWidget);
+    });
+
+    testWidgets('Right from the rail moves the focus into the shelf', (
+      WidgetTester tester,
+    ) async {
+      await pumpAt(tester, const Size(1400, 2400));
+      final FocusNode? before = FocusManager.instance.primaryFocus;
+      expect(before, isNotNull);
+      // The rail is 320 wide; the shelf starts to its right.
+      expect(before?.rect.left, lessThan(320));
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+
+      final FocusNode? after = FocusManager.instance.primaryFocus;
+      expect(after, isNot(same(before)));
+      expect(after?.rect.left, greaterThan(320));
     });
 
     testWidgets('search shows results and clearing brings the shelf back', (
