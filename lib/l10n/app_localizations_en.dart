@@ -6466,4 +6466,7 @@ class SEn extends S {
   String kickLoadFailed(String error) {
     return 'Could not load Kick: $error';
   }
+
+  @override
+  String get catalogGenres => 'Genres';
 }

@@ -2377,5 +2377,6 @@
   "ytReconnect": "Подключить заново",
   "ytReconnectNeeded": "YouTube больше не принимает сохранённый вход. Подключите аккаунт заново.",
   "ytFeedFailedPlain": "Не удалось загрузить ленту: {error}",
-  "kickLoadFailed": "Не удалось загрузить Kick: {error}"
+  "kickLoadFailed": "Не удалось загрузить Kick: {error}",
+  "catalogGenres": "Жанры"
 }

@@ -2716,5 +2716,6 @@
   "ytReconnect": "Reconnecter",
   "ytReconnectNeeded": "YouTube n'accepte plus la connexion enregistrée. Reconnectez le compte.",
   "ytFeedFailedPlain": "Impossible de charger le flux : {error}",
-  "kickLoadFailed": "Impossible de charger Kick : {error}"
+  "kickLoadFailed": "Impossible de charger Kick : {error}",
+  "catalogGenres": "Genres"
 }

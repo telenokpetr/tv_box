@@ -6566,4 +6566,7 @@ class SRu extends S {
   String kickLoadFailed(String error) {
     return 'Не удалось загрузить Kick: $error';
   }
+
+  @override
+  String get catalogGenres => 'Жанры';
 }

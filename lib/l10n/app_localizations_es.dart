@@ -6542,4 +6542,7 @@ class SEs extends S {
   String kickLoadFailed(String error) {
     return 'No se pudo cargar Kick: $error';
   }
+
+  @override
+  String get catalogGenres => 'Géneros';
 }

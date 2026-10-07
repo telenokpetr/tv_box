@@ -315,17 +315,32 @@ bool studioMatches(String studio, String company) {
   };
 }
 
-/// The `|`-joined company ids of a studio, looked up by name once per run so
-/// no id has to be hard-coded; empty when TMDB knows none.
-final FutureProviderFamily<String, String> studioCompaniesProvider =
-    FutureProvider.family<String, String>((Ref ref, String studio) async {
+/// The `|`-joined company ids of a studio, looked up by name so no id has to
+/// be hard-coded. Empty when TMDB knows none or cannot be reached: the movies
+/// are then skipped and the shelf still shows the series. Only a found answer
+/// is kept for the run, so a dropped connection is asked again next time.
+final AutoDisposeFutureProviderFamily<String, String> studioCompaniesProvider =
+    FutureProvider.autoDispose.family<String, String>((
+      Ref ref,
+      String studio,
+    ) async {
       final TmdbApi tmdb = ref.read(tmdbApiProvider);
       final Set<int> ids = <int>{};
       for (final String query in _kStudioQueries[studio] ?? const <String>[]) {
-        for (final TmdbCompany c in await tmdb.searchCompanies(query)) {
+        List<TmdbCompany> found = const <TmdbCompany>[];
+        for (int attempt = 0; attempt < 2; attempt++) {
+          try {
+            found = await tmdb.searchCompanies(query);
+            break;
+          } on TmdbApiException {
+            await Future<void>.delayed(const Duration(milliseconds: 400));
+          }
+        }
+        for (final TmdbCompany c in found) {
           if (studioMatches(studio, c.name)) ids.add(c.id);
         }
       }
+      if (ids.isNotEmpty) ref.keepAlive();
       return ids.take(10).join('|');
     });
 

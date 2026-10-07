@@ -6560,4 +6560,7 @@ class SFr extends S {
   String kickLoadFailed(String error) {
     return 'Impossible de charger Kick : $error';
   }
+
+  @override
+  String get catalogGenres => 'Genres';
 }

@@ -6158,4 +6158,7 @@ class SZh extends S {
   String kickLoadFailed(String error) {
     return '无法加载 Kick:$error';
   }
+
+  @override
+  String get catalogGenres => '类型';
 }

@@ -63,6 +63,37 @@ void main() {
       expect(find.text('Shelf recs'), findsNothing);
     });
 
+    testWidgets('genres fold away and open on a tap on their header', (
+      WidgetTester tester,
+    ) async {
+      await pumpAt(tester, const Size(1400, 2400));
+
+      expect(
+        find.byIcon(Icons.sentiment_very_satisfied_outlined),
+        findsNothing,
+      );
+
+      await tester.tap(find.byIcon(Icons.category_outlined));
+      await tester.pumpAndSettle();
+      expect(
+        find.byIcon(Icons.sentiment_very_satisfied_outlined),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.byIcon(Icons.sentiment_very_satisfied_outlined));
+      await tester.pumpAndSettle();
+      expect(find.text('Shelf g_comedy'), findsOneWidget);
+
+      await tester.tap(find.byIcon(Icons.category_outlined));
+      await tester.pumpAndSettle();
+      expect(
+        find.byIcon(Icons.sentiment_very_satisfied_outlined),
+        findsNothing,
+      );
+      // Folding the list does not close the shelf that is showing.
+      expect(find.text('Shelf g_comedy'), findsOneWidget);
+    });
+
     testWidgets('Netflix and Apple tab offers a choice of platform', (
       WidgetTester tester,
     ) async {

@@ -2716,5 +2716,6 @@
   "ytReconnect": "Conectar de nuevo",
   "ytReconnectNeeded": "YouTube ya no acepta el inicio de sesión guardado. Conecta la cuenta de nuevo.",
   "ytFeedFailedPlain": "No se pudo cargar el feed: {error}",
-  "kickLoadFailed": "No se pudo cargar Kick: {error}"
+  "kickLoadFailed": "No se pudo cargar Kick: {error}",
+  "catalogGenres": "Géneros"
 }

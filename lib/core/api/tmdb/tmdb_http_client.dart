@@ -3,20 +3,29 @@ import 'package:dio/dio.dart';
 
 import '../api_dio.dart';
 import '../api_error_detail.dart';
+import '../doh_fallback.dart';
 import 'tmdb_types.dart';
 
 // TMDB v3 transport; injects the API key and language into every request.
 // Docs: https://developer.themoviedb.org/reference
 class TmdbHttpClient {
   TmdbHttpClient({Dio? dio, String language = 'ru-RU'})
-      : _dio = dio ??
-            createApiDio(
-              connectTimeout: _timeout,
-              receiveTimeout: _timeout,
-            ),
+      : _dio = dio ?? _defaultDio(),
         _language = language;
 
-  static const Duration _timeout = Duration(seconds: 5);
+  // Behind a VPN a call takes longer than the 5 s it used to be given.
+  static const Duration _timeout = Duration(seconds: 15);
+
+  // Some networks answer api.themoviedb.org with a dead address; the fallback
+  // then looks it up over HTTPS.
+  static Dio _defaultDio() {
+    final Dio dio = createApiDio(
+      connectTimeout: _timeout,
+      receiveTimeout: _timeout,
+    );
+    applyDohFallback(dio);
+    return dio;
+  }
   static const String _baseUrl = 'https://api.themoviedb.org/3';
 
   final Dio _dio;

@@ -2711,5 +2711,6 @@
   "ytReconnect": "重新连接",
   "ytReconnectNeeded": "YouTube 不再接受已保存的登录,请重新连接账号。",
   "ytFeedFailedPlain": "无法加载列表:{error}",
-  "kickLoadFailed": "无法加载 Kick:{error}"
+  "kickLoadFailed": "无法加载 Kick:{error}",
+  "catalogGenres": "类型"
 }

@@ -195,6 +195,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
   final TextEditingController _search = TextEditingController();
   String _query = '';
   String _selected = kShelfIds.first;
+  bool _genresOpen = false;
 
   @override
   void dispose() {
@@ -211,6 +212,8 @@ class _CatalogScreenState extends State<CatalogScreen> {
       _query = '';
     });
   }
+
+  void _toggleGenres() => setState(() => _genresOpen = !_genresOpen);
 
   @override
   Widget build(BuildContext context) {
@@ -257,6 +260,8 @@ class _CatalogScreenState extends State<CatalogScreen> {
                   selected: _query.isEmpty ? _selected : '',
                   compact: compact,
                   onSelect: _select,
+                  genresOpen: _genresOpen,
+                  onToggleGenres: _toggleGenres,
                 ),
                 Expanded(
                   child: _Content(
@@ -280,11 +285,15 @@ class _Rail extends StatelessWidget {
     required this.selected,
     required this.compact,
     required this.onSelect,
+    required this.genresOpen,
+    required this.onToggleGenres,
   });
 
   final String selected;
   final bool compact;
   final ValueChanged<String> onSelect;
+  final bool genresOpen;
+  final VoidCallback onToggleGenres;
 
   Widget _item(S l, String id) => _RailItem(
     icon: _shelfIcon(id),
@@ -302,11 +311,13 @@ class _Rail extends StatelessWidget {
     final List<List<String>> groups = <List<String>>[
       for (final List<String> g in _kRailGroups)
         if (!g.every(_kSettingsIds.contains))
-          <String>[
-            for (final String id in g)
-              // WebView2 exists on Windows only.
-              if (id != 'movix' || kIsWindowsApp) id,
-          ],
+          identical(g, kGenreShelves)
+              ? g
+              : <String>[
+                  for (final String id in g)
+                    // WebView2 exists on Windows only.
+                    if (id != 'movix' || kIsWindowsApp) id,
+                ],
     ];
     return Container(
       width: compact ? _kRailCompactWidth : _kRailWidth,
@@ -323,7 +334,19 @@ class _Rail extends StatelessWidget {
                       padding: EdgeInsets.symmetric(vertical: 6, horizontal: 8),
                       child: Divider(height: 1, color: _kStroke),
                     ),
-                  for (final String id in groups[g]) _item(l, id),
+                  if (identical(groups[g], kGenreShelves)) ...<Widget>[
+                    _RailItem(
+                      icon: Icons.category_outlined,
+                      label: l.catalogGenres,
+                      selected: false,
+                      compact: compact,
+                      expanded: genresOpen,
+                      onTap: onToggleGenres,
+                    ),
+                    if (genresOpen)
+                      for (final String id in groups[g]) _item(l, id),
+                  ] else
+                    for (final String id in groups[g]) _item(l, id),
                 ],
               ],
             ),
@@ -350,6 +373,7 @@ class _RailItem extends StatefulWidget {
     required this.selected,
     required this.compact,
     required this.onTap,
+    this.expanded,
   });
 
   final IconData icon;
@@ -357,6 +381,9 @@ class _RailItem extends StatefulWidget {
   final bool selected;
   final bool compact;
   final VoidCallback onTap;
+
+  /// Set for a folding header: whether its items are showing.
+  final bool? expanded;
 
   @override
   State<_RailItem> createState() => _RailItemState();
@@ -400,6 +427,15 @@ class _RailItemState extends State<_RailItem> {
               ),
             ),
           ),
+          if (widget.expanded case final bool open)
+            Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: Icon(
+                open ? Icons.expand_less : Icons.expand_more,
+                size: 18,
+                color: _kTextTertiary,
+              ),
+            ),
         ],
       ],
     );

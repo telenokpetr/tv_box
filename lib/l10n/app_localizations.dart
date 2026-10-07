@@ -11407,6 +11407,12 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Could not load Kick: {error}'**
   String kickLoadFailed(String error);
+
+  /// No description provided for @catalogGenres.
+  ///
+  /// In en, this message translates to:
+  /// **'Genres'**
+  String get catalogGenres;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

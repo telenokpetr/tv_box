@@ -6523,4 +6523,7 @@ class SPt extends S {
   String kickLoadFailed(String error) {
     return 'Não foi possível carregar o Kick: $error';
   }
+
+  @override
+  String get catalogGenres => 'Gêneros';
 }
