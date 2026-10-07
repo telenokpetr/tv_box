@@ -6561,4 +6561,9 @@ class SRu extends S {
   String ytFeedFailedPlain(String error) {
     return 'Не удалось загрузить ленту: $error';
   }
+
+  @override
+  String kickLoadFailed(String error) {
+    return 'Не удалось загрузить Kick: $error';
+  }
 }

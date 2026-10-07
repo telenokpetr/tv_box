@@ -6518,4 +6518,9 @@ class SPt extends S {
   String ytFeedFailedPlain(String error) {
     return 'Não foi possível carregar o feed: $error';
   }
+
+  @override
+  String kickLoadFailed(String error) {
+    return 'Não foi possível carregar o Kick: $error';
+  }
 }

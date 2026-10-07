@@ -2921,5 +2921,11 @@
     "placeholders": {
       "error": {"type": "String"}
     }
+  },
+  "kickLoadFailed": "Could not load Kick: {error}",
+  "@kickLoadFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
   }
 }

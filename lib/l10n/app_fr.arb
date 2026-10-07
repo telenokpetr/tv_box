@@ -2715,5 +2715,6 @@
   "ytNotConnectedNow": "Le compte YouTube n'est pas connecté",
   "ytReconnect": "Reconnecter",
   "ytReconnectNeeded": "YouTube n'accepte plus la connexion enregistrée. Reconnectez le compte.",
-  "ytFeedFailedPlain": "Impossible de charger le flux : {error}"
+  "ytFeedFailedPlain": "Impossible de charger le flux : {error}",
+  "kickLoadFailed": "Impossible de charger Kick : {error}"
 }

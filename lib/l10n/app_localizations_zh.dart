@@ -6153,4 +6153,9 @@ class SZh extends S {
   String ytFeedFailedPlain(String error) {
     return '无法加载列表:$error';
   }
+
+  @override
+  String kickLoadFailed(String error) {
+    return '无法加载 Kick:$error';
+  }
 }

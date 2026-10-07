@@ -11401,6 +11401,12 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Could not load the feed: {error}'**
   String ytFeedFailedPlain(String error);
+
+  /// No description provided for @kickLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load Kick: {error}'**
+  String kickLoadFailed(String error);
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

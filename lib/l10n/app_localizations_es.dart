@@ -6537,4 +6537,9 @@ class SEs extends S {
   String ytFeedFailedPlain(String error) {
     return 'No se pudo cargar el feed: $error';
   }
+
+  @override
+  String kickLoadFailed(String error) {
+    return 'No se pudo cargar Kick: $error';
+  }
 }

@@ -3143,5 +3143,6 @@
   "ytNotConnectedNow": "A conta do YouTube não está conectada",
   "ytReconnect": "Conectar de novo",
   "ytReconnectNeeded": "O YouTube não aceita mais o login salvo. Conecte a conta de novo.",
-  "ytFeedFailedPlain": "Não foi possível carregar o feed: {error}"
+  "ytFeedFailedPlain": "Não foi possível carregar o feed: {error}",
+  "kickLoadFailed": "Não foi possível carregar o Kick: {error}"
 }

@@ -133,13 +133,44 @@ const Set<String> kSerialShelves = <String>{
   'kp_series_top',
 };
 
-// The pages are independent requests, so they go out together.
+/// One page, tried twice: a dropped connection is common behind a VPN.
+Future<List<T>> _pageWithRetry<T>(
+  Future<List<T>> Function(int page) fetch,
+  int page,
+) async {
+  try {
+    return await fetch(page);
+  } on Exception {
+    await Future<void>.delayed(const Duration(milliseconds: 400));
+    return fetch(page);
+  }
+}
+
+/// The pages are independent requests, so they go out together. A page that
+/// fails twice is left out; the shelf fails only if every page did.
+Future<List<List<T>>> _fetchPages<T>(
+  Future<List<T>> Function(int page) fetch,
+) async {
+  Object? firstError;
+  final List<List<T>?> pages = await Future.wait(<Future<List<T>?>>[
+    for (int page = 1; page <= _kShelfPages; page++)
+      _pageWithRetry<T>(fetch, page).then<List<T>?>(
+        (List<T> items) => items,
+        onError: (Object error) {
+          firstError ??= error;
+          return null;
+        },
+      ),
+  ]);
+  final List<List<T>> loaded = pages.whereType<List<T>>().toList();
+  if (loaded.isEmpty) throw firstError ?? StateError('no pages');
+  return loaded;
+}
+
 Future<List<CatalogItem>> _movies(
   Future<List<Movie>> Function(int page) fetch,
 ) async {
-  final List<List<Movie>> pages = await Future.wait(<Future<List<Movie>>>[
-    for (int page = 1; page <= _kShelfPages; page++) fetch(page),
-  ]);
+  final List<List<Movie>> pages = await _fetchPages<Movie>(fetch);
   return dedupeItems(<CatalogItem>[
     for (final List<Movie> movies in pages)
       ...movies.map(CatalogItem.fromMovie),
@@ -149,9 +180,7 @@ Future<List<CatalogItem>> _movies(
 Future<List<CatalogItem>> _series(
   Future<List<TvShow>> Function(int page) fetch,
 ) async {
-  final List<List<TvShow>> pages = await Future.wait(<Future<List<TvShow>>>[
-    for (int page = 1; page <= _kShelfPages; page++) fetch(page),
-  ]);
+  final List<List<TvShow>> pages = await _fetchPages<TvShow>(fetch);
   return dedupeItems(<CatalogItem>[
     for (final List<TvShow> shows in pages) ...shows.map(CatalogItem.fromTv),
   ]);

@@ -77,6 +77,20 @@ void main() {
       );
     });
 
+    test('the account cookies on youtube.com are not enough without it', () {
+      expect(
+        hasYoutubeLogin(
+          parseBrowserCookies(
+            reply(<Map<String, Object?>>[
+              cookie('SAPISID', '.youtube.com'),
+              cookie('SID', '.youtube.com'),
+            ]),
+          ),
+        ),
+        isFalse,
+      );
+    });
+
     test('the Google cookies alone are not enough yet', () {
       expect(
         hasYoutubeLogin(

@@ -6461,4 +6461,9 @@ class SEn extends S {
   String ytFeedFailedPlain(String error) {
     return 'Could not load the feed: $error';
   }
+
+  @override
+  String kickLoadFailed(String error) {
+    return 'Could not load Kick: $error';
+  }
 }

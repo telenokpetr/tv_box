@@ -6555,4 +6555,9 @@ class SFr extends S {
   String ytFeedFailedPlain(String error) {
     return 'Impossible de charger le flux : $error';
   }
+
+  @override
+  String kickLoadFailed(String error) {
+    return 'Impossible de charger Kick : $error';
+  }
 }

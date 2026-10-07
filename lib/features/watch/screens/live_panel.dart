@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../core/api/kick_api.dart';
 import '../../../core/api/twitch_api.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/extensions/snackbar_extension.dart';
@@ -201,6 +202,15 @@ class _LivePanelState extends ConsumerState<LivePanel> {
               ),
             ),
           ],
+          if (widget.service == LiveService.kick) ...<Widget>[
+            const SizedBox(height: 16),
+            Expanded(
+              child: _KickBrowse(
+                onOpen: (KickStream s) =>
+                    _open(s.url, title: '${s.name} - ${s.title}'),
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -277,8 +287,12 @@ class _TwitchBrowseState extends ConsumerState<_TwitchBrowse> {
                         itemCount: streams.length,
                         itemBuilder: (BuildContext context, int i) =>
                             _StreamCard(
-                              stream: streams[i],
-                              onTap: widget.onOpen,
+                              name: streams[i].name,
+                              title: streams[i].title,
+                              viewers: streams[i].viewers,
+                              thumbnail: streams[i].thumbnail,
+                              game: streams[i].gameName,
+                              onTap: () => widget.onOpen(streams[i]),
                             ),
                       ),
                 loading: () => const Center(child: CircularProgressIndicator()),
@@ -295,18 +309,103 @@ class _TwitchBrowseState extends ConsumerState<_TwitchBrowse> {
   }
 }
 
-class _StreamCard extends StatelessWidget {
-  const _StreamCard({required this.stream, required this.onTap});
+/// What Kick itself lists as live, in Russian or English; no key needed.
+class _KickBrowse extends ConsumerStatefulWidget {
+  const _KickBrowse({required this.onOpen});
 
-  final TwitchStream stream;
-  final ValueChanged<TwitchStream> onTap;
+  final ValueChanged<KickStream> onOpen;
+
+  @override
+  ConsumerState<_KickBrowse> createState() => _KickBrowseState();
+}
+
+class _KickBrowseState extends ConsumerState<_KickBrowse> {
+  String _language = kKickLanguageRu;
 
   @override
   Widget build(BuildContext context) {
-    final String? thumb = stream.thumbnail;
+    final S l = S.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Wrap(
+          spacing: 8,
+          children: <Widget>[
+            for (final String language in <String>[
+              kKickLanguageRu,
+              kKickLanguageEn,
+            ])
+              ChoiceChip(
+                key: ValueKey<String>(language),
+                label: Text(language.toUpperCase()),
+                selected: _language == language,
+                onSelected: (_) => setState(() => _language = language),
+              ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Expanded(
+          child: ref
+              .watch(kickStreamsProvider(_language))
+              .when(
+                data: (List<KickStream> streams) => streams.isEmpty
+                    ? Center(child: Text(l.catalogEmpty))
+                    : GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                              maxCrossAxisExtent: 280,
+                              mainAxisSpacing: 16,
+                              crossAxisSpacing: 16,
+                              childAspectRatio: 1.05,
+                            ),
+                        itemCount: streams.length,
+                        itemBuilder: (BuildContext context, int i) =>
+                            _StreamCard(
+                              name: streams[i].name,
+                              title: streams[i].title,
+                              viewers: streams[i].viewers,
+                              thumbnail: streams[i].thumbnail,
+                              game: streams[i].category,
+                              onTap: () => widget.onOpen(streams[i]),
+                            ),
+                      ),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (Object e, StackTrace s) => Center(
+                  child: Text(
+                    l.kickLoadFailed(e is KickApiException ? e.message : '$e'),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+        ),
+      ],
+    );
+  }
+}
+
+class _StreamCard extends StatelessWidget {
+  const _StreamCard({
+    required this.name,
+    required this.title,
+    required this.viewers,
+    required this.onTap,
+    this.thumbnail,
+    this.game,
+  });
+
+  final String name;
+  final String title;
+  final int viewers;
+  final String? thumbnail;
+  final String? game;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final String? thumb = thumbnail;
     return InkWell(
       borderRadius: BorderRadius.circular(8),
-      onTap: () => onTap(stream),
+      onTap: onTap,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -348,7 +447,7 @@ class _StreamCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            '${stream.viewers}',
+                            '$viewers',
                             style: const TextStyle(fontSize: 12),
                           ),
                         ],
@@ -361,20 +460,20 @@ class _StreamCard extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            stream.name,
+            name,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
           ),
           Text(
-            stream.title,
+            title,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(fontSize: 12, color: Colors.white70),
           ),
-          if (stream.gameName != null)
+          if (game != null)
             Text(
-              stream.gameName ?? '',
+              game ?? '',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(fontSize: 12, color: Colors.white54),

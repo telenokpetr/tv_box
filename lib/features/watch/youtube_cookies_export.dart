@@ -58,13 +58,12 @@ List<BrowserCookie> parseBrowserCookies(String json) {
 
 bool _onYoutube(String domain) => domain.toLowerCase().contains('youtube.com');
 
-/// Whether the browser is signed in to YouTube: it sets `LOGIN_INFO` on its
-/// own domain once the account is accepted, and that is what yt-dlp needs.
+/// Whether the browser is signed in to YouTube. yt-dlp counts a cookie file as
+/// logged in only with `LOGIN_INFO`, which YouTube sets a moment after the
+/// Google cookies; the account cookies alone make it ask for a login again.
 bool hasYoutubeLogin(List<BrowserCookie> cookies) => cookies.any(
   (BrowserCookie c) =>
-      _onYoutube(c.domain) &&
-      (c.name == 'LOGIN_INFO' || c.name == 'SAPISID') &&
-      c.value.isNotEmpty,
+      _onYoutube(c.domain) && c.name == 'LOGIN_INFO' && c.value.isNotEmpty,
 );
 
 /// The cookies yt-dlp reads for a YouTube session: YouTube's own and the
