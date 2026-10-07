@@ -265,6 +265,8 @@ class TmdbTvApi {
     String? originalLanguage,
     List<int>? withoutGenreIds,
     String? withNetworks,
+    String? withCompanies,
+    String? withOriginCountry,
     String sortBy = 'popularity.desc',
     int page = 1,
   }) async {
@@ -300,6 +302,10 @@ class TmdbTvApi {
         params['without_genres'] = withoutGenreIds.join(',');
       }
       if (withNetworks != null) params['with_networks'] = withNetworks;
+      if (withCompanies != null) params['with_companies'] = withCompanies;
+      if (withOriginCountry != null) {
+        params['with_origin_country'] = withOriginCountry;
+      }
 
       final Response<dynamic> response = await _client.get(
         '/discover/tv',

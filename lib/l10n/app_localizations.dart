@@ -11155,6 +11155,252 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Twitch Client Secret'**
   String get watchTwitchClientSecret;
+
+  /// No description provided for @catalogMoviesNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New movies'**
+  String get catalogMoviesNew;
+
+  /// No description provided for @catalogSeriesNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New series'**
+  String get catalogSeriesNew;
+
+  /// No description provided for @catalogOnAir.
+  ///
+  /// In en, this message translates to:
+  /// **'On air now'**
+  String get catalogOnAir;
+
+  /// No description provided for @catalogMoviesPopular.
+  ///
+  /// In en, this message translates to:
+  /// **'Popular movies'**
+  String get catalogMoviesPopular;
+
+  /// No description provided for @catalogSeriesPopular.
+  ///
+  /// In en, this message translates to:
+  /// **'Popular series'**
+  String get catalogSeriesPopular;
+
+  /// No description provided for @catalogMoviesBest.
+  ///
+  /// In en, this message translates to:
+  /// **'Best movies'**
+  String get catalogMoviesBest;
+
+  /// No description provided for @catalogGenreComedy.
+  ///
+  /// In en, this message translates to:
+  /// **'Comedies'**
+  String get catalogGenreComedy;
+
+  /// No description provided for @catalogGenreAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Action'**
+  String get catalogGenreAction;
+
+  /// No description provided for @catalogGenreThriller.
+  ///
+  /// In en, this message translates to:
+  /// **'Thrillers'**
+  String get catalogGenreThriller;
+
+  /// No description provided for @catalogGenreHorror.
+  ///
+  /// In en, this message translates to:
+  /// **'Horror'**
+  String get catalogGenreHorror;
+
+  /// No description provided for @catalogGenreSciFi.
+  ///
+  /// In en, this message translates to:
+  /// **'Sci-Fi'**
+  String get catalogGenreSciFi;
+
+  /// No description provided for @catalogGenreDrama.
+  ///
+  /// In en, this message translates to:
+  /// **'Drama'**
+  String get catalogGenreDrama;
+
+  /// No description provided for @catalogGenreCrime.
+  ///
+  /// In en, this message translates to:
+  /// **'Crime'**
+  String get catalogGenreCrime;
+
+  /// No description provided for @catalogGenreMystery.
+  ///
+  /// In en, this message translates to:
+  /// **'Mystery'**
+  String get catalogGenreMystery;
+
+  /// No description provided for @catalogGenreWar.
+  ///
+  /// In en, this message translates to:
+  /// **'War'**
+  String get catalogGenreWar;
+
+  /// No description provided for @catalogGenreFantasy.
+  ///
+  /// In en, this message translates to:
+  /// **'Fantasy'**
+  String get catalogGenreFantasy;
+
+  /// No description provided for @catalogGenreRomance.
+  ///
+  /// In en, this message translates to:
+  /// **'Romance'**
+  String get catalogGenreRomance;
+
+  /// No description provided for @catalogGenreFamily.
+  ///
+  /// In en, this message translates to:
+  /// **'Family'**
+  String get catalogGenreFamily;
+
+  /// No description provided for @catalogGenreHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get catalogGenreHistory;
+
+  /// No description provided for @catalogGenreWestern.
+  ///
+  /// In en, this message translates to:
+  /// **'Westerns'**
+  String get catalogGenreWestern;
+
+  /// No description provided for @catalogCountryRu.
+  ///
+  /// In en, this message translates to:
+  /// **'Russian cinema'**
+  String get catalogCountryRu;
+
+  /// No description provided for @catalogCountrySoviet.
+  ///
+  /// In en, this message translates to:
+  /// **'Soviet cinema'**
+  String get catalogCountrySoviet;
+
+  /// No description provided for @catalogCountryKr.
+  ///
+  /// In en, this message translates to:
+  /// **'Korean'**
+  String get catalogCountryKr;
+
+  /// No description provided for @catalogCountryTr.
+  ///
+  /// In en, this message translates to:
+  /// **'Turkish'**
+  String get catalogCountryTr;
+
+  /// No description provided for @catalogCountryGb.
+  ///
+  /// In en, this message translates to:
+  /// **'British'**
+  String get catalogCountryGb;
+
+  /// No description provided for @catalogDocs.
+  ///
+  /// In en, this message translates to:
+  /// **'Documentaries'**
+  String get catalogDocs;
+
+  /// No description provided for @catalogChipAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get catalogChipAll;
+
+  /// No description provided for @catalogChipMovies.
+  ///
+  /// In en, this message translates to:
+  /// **'Movies'**
+  String get catalogChipMovies;
+
+  /// No description provided for @catalogChipSeries.
+  ///
+  /// In en, this message translates to:
+  /// **'Series'**
+  String get catalogChipSeries;
+
+  /// No description provided for @catalogChipNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get catalogChipNew;
+
+  /// No description provided for @ytSignInTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to YouTube'**
+  String get ytSignInTitle;
+
+  /// No description provided for @ytSignInHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with your Google account. The window closes by itself when you are in.'**
+  String get ytSignInHint;
+
+  /// No description provided for @ytSignInSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving the sign-in…'**
+  String get ytSignInSaving;
+
+  /// No description provided for @ytSignInManual.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m signed in'**
+  String get ytSignInManual;
+
+  /// No description provided for @ytSignInFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign-in was not saved: {error}'**
+  String ytSignInFailed(String error);
+
+  /// No description provided for @ytSignInNoBrowser.
+  ///
+  /// In en, this message translates to:
+  /// **'The embedded browser is not available (WebView2 is missing).'**
+  String get ytSignInNoBrowser;
+
+  /// No description provided for @ytConnectedNow.
+  ///
+  /// In en, this message translates to:
+  /// **'YouTube account connected'**
+  String get ytConnectedNow;
+
+  /// No description provided for @ytNotConnectedNow.
+  ///
+  /// In en, this message translates to:
+  /// **'YouTube account is not connected'**
+  String get ytNotConnectedNow;
+
+  /// No description provided for @ytReconnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect'**
+  String get ytReconnect;
+
+  /// No description provided for @ytReconnectNeeded.
+  ///
+  /// In en, this message translates to:
+  /// **'YouTube no longer accepts the saved sign-in. Connect the account again.'**
+  String get ytReconnectNeeded;
+
+  /// No description provided for @ytFeedFailedPlain.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the feed: {error}'**
+  String ytFeedFailedPlain(String error);
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

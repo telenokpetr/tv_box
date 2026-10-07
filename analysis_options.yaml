@@ -30,6 +30,13 @@ analyzer:
     - "**/*.freezed.dart"
     - "build/**"
     - ".dart_tool/**"
+    # Vendored plugin copy, kept as the upstream wrote it.
+    - "packages/webview_windows/**"
+    - android/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
 
 linter:
   rules:

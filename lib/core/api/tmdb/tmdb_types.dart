@@ -34,6 +34,13 @@ class TmdbFindResult {
   TvShow? get firstTvShow => tvShows.isNotEmpty ? tvShows.first : null;
 }
 
+class TmdbCompany {
+  const TmdbCompany({required this.id, required this.name});
+
+  final int id;
+  final String name;
+}
+
 class TmdbApiException implements Exception {
   const TmdbApiException(this.message, {this.statusCode, this.detail});
 

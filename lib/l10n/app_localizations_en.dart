@@ -6331,4 +6331,134 @@ class SEn extends S {
 
   @override
   String get watchTwitchClientSecret => 'Twitch Client Secret';
+
+  @override
+  String get catalogMoviesNew => 'New movies';
+
+  @override
+  String get catalogSeriesNew => 'New series';
+
+  @override
+  String get catalogOnAir => 'On air now';
+
+  @override
+  String get catalogMoviesPopular => 'Popular movies';
+
+  @override
+  String get catalogSeriesPopular => 'Popular series';
+
+  @override
+  String get catalogMoviesBest => 'Best movies';
+
+  @override
+  String get catalogGenreComedy => 'Comedies';
+
+  @override
+  String get catalogGenreAction => 'Action';
+
+  @override
+  String get catalogGenreThriller => 'Thrillers';
+
+  @override
+  String get catalogGenreHorror => 'Horror';
+
+  @override
+  String get catalogGenreSciFi => 'Sci-Fi';
+
+  @override
+  String get catalogGenreDrama => 'Drama';
+
+  @override
+  String get catalogGenreCrime => 'Crime';
+
+  @override
+  String get catalogGenreMystery => 'Mystery';
+
+  @override
+  String get catalogGenreWar => 'War';
+
+  @override
+  String get catalogGenreFantasy => 'Fantasy';
+
+  @override
+  String get catalogGenreRomance => 'Romance';
+
+  @override
+  String get catalogGenreFamily => 'Family';
+
+  @override
+  String get catalogGenreHistory => 'History';
+
+  @override
+  String get catalogGenreWestern => 'Westerns';
+
+  @override
+  String get catalogCountryRu => 'Russian cinema';
+
+  @override
+  String get catalogCountrySoviet => 'Soviet cinema';
+
+  @override
+  String get catalogCountryKr => 'Korean';
+
+  @override
+  String get catalogCountryTr => 'Turkish';
+
+  @override
+  String get catalogCountryGb => 'British';
+
+  @override
+  String get catalogDocs => 'Documentaries';
+
+  @override
+  String get catalogChipAll => 'All';
+
+  @override
+  String get catalogChipMovies => 'Movies';
+
+  @override
+  String get catalogChipSeries => 'Series';
+
+  @override
+  String get catalogChipNew => 'New';
+
+  @override
+  String get ytSignInTitle => 'Sign in to YouTube';
+
+  @override
+  String get ytSignInHint =>
+      'Sign in with your Google account. The window closes by itself when you are in.';
+
+  @override
+  String get ytSignInSaving => 'Saving the sign-in…';
+
+  @override
+  String get ytSignInManual => 'I\'m signed in';
+
+  @override
+  String ytSignInFailed(String error) {
+    return 'Sign-in was not saved: $error';
+  }
+
+  @override
+  String get ytSignInNoBrowser =>
+      'The embedded browser is not available (WebView2 is missing).';
+
+  @override
+  String get ytConnectedNow => 'YouTube account connected';
+
+  @override
+  String get ytNotConnectedNow => 'YouTube account is not connected';
+
+  @override
+  String get ytReconnect => 'Reconnect';
+
+  @override
+  String get ytReconnectNeeded =>
+      'YouTube no longer accepts the saved sign-in. Connect the account again.';
+
+  @override
+  String ytFeedFailedPlain(String error) {
+    return 'Could not load the feed: $error';
+  }
 }

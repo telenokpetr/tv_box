@@ -132,6 +132,8 @@ class TmdbApi {
     int? voteCountGte,
     double? voteAverageGte,
     String? originalLanguage,
+    String? withCompanies,
+    String? withOriginCountry,
     String sortBy = 'popularity.desc',
     int page = 1,
   }) =>
@@ -144,9 +146,14 @@ class TmdbApi {
         voteCountGte: voteCountGte,
         voteAverageGte: voteAverageGte,
         originalLanguage: originalLanguage,
+        withCompanies: withCompanies,
+        withOriginCountry: withOriginCountry,
         sortBy: sortBy,
         page: page,
       );
+
+  Future<List<TmdbCompany>> searchCompanies(String query) =>
+      _movies.searchCompanies(query);
 
   Future<List<TvShow>> searchTvShows(
     String query, {
@@ -211,6 +218,8 @@ class TmdbApi {
     String? originalLanguage,
     List<int>? withoutGenreIds,
     String? withNetworks,
+    String? withCompanies,
+    String? withOriginCountry,
     String sortBy = 'popularity.desc',
     int page = 1,
   }) =>
@@ -227,6 +236,8 @@ class TmdbApi {
         originalLanguage: originalLanguage,
         withoutGenreIds: withoutGenreIds,
         withNetworks: withNetworks,
+        withCompanies: withCompanies,
+        withOriginCountry: withOriginCountry,
         sortBy: sortBy,
         page: page,
       );

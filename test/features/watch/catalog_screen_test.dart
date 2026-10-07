@@ -53,13 +53,45 @@ void main() {
     });
 
     testWidgets('a rail item switches the shelf', (WidgetTester tester) async {
-      await pumpAt(tester, const Size(1400, 900));
+      // The rail is a lazy list: a tall window builds every item in it.
+      await pumpAt(tester, const Size(1400, 2400));
 
       await tester.tap(find.byIcon(Icons.history).first);
       await tester.pumpAndSettle();
 
       expect(find.text('Shelf old_cartoons'), findsOneWidget);
       expect(find.text('Shelf recs'), findsNothing);
+    });
+
+    testWidgets('Netflix and Apple tab offers a choice of platform', (
+      WidgetTester tester,
+    ) async {
+      await pumpAt(tester, const Size(1400, 2400));
+
+      await tester.tap(find.byIcon(Icons.connected_tv_outlined));
+      await tester.pumpAndSettle();
+      expect(find.text('Shelf netflix_apple:all'), findsOneWidget);
+      expect(find.byType(ChoiceChip), findsNWidgets(3));
+
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Apple TV+'));
+      await tester.pumpAndSettle();
+      expect(find.text('Shelf netflix_apple:apple'), findsOneWidget);
+      expect(find.text('Shelf netflix_apple:all'), findsNothing);
+    });
+
+    testWidgets('documentaries tab has its own choices', (
+      WidgetTester tester,
+    ) async {
+      await pumpAt(tester, const Size(1400, 2400));
+
+      await tester.tap(find.byIcon(Icons.article_outlined));
+      await tester.pumpAndSettle();
+      expect(find.text('Shelf docs:all'), findsOneWidget);
+      expect(find.byType(ChoiceChip), findsNWidgets(5));
+
+      await tester.tap(find.widgetWithText(ChoiceChip, 'BBC'));
+      await tester.pumpAndSettle();
+      expect(find.text('Shelf docs:bbc'), findsOneWidget);
     });
 
     testWidgets('search shows results and clearing brings the shelf back', (
@@ -83,7 +115,7 @@ void main() {
     testWidgets('opens the panel and explains a missing browser', (
       WidgetTester tester,
     ) async {
-      tester.view.physicalSize = const Size(1400, 900);
+      tester.view.physicalSize = const Size(1400, 2400);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
 

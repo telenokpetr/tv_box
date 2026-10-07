@@ -6407,4 +6407,134 @@ class SEs extends S {
 
   @override
   String get watchTwitchClientSecret => 'Twitch Client Secret';
+
+  @override
+  String get catalogMoviesNew => 'Estrenos';
+
+  @override
+  String get catalogSeriesNew => 'Series nuevas';
+
+  @override
+  String get catalogOnAir => 'En emisión';
+
+  @override
+  String get catalogMoviesPopular => 'Películas populares';
+
+  @override
+  String get catalogSeriesPopular => 'Series populares';
+
+  @override
+  String get catalogMoviesBest => 'Mejores películas';
+
+  @override
+  String get catalogGenreComedy => 'Comedias';
+
+  @override
+  String get catalogGenreAction => 'Acción';
+
+  @override
+  String get catalogGenreThriller => 'Suspenso';
+
+  @override
+  String get catalogGenreHorror => 'Terror';
+
+  @override
+  String get catalogGenreSciFi => 'Ciencia ficción';
+
+  @override
+  String get catalogGenreDrama => 'Dramas';
+
+  @override
+  String get catalogGenreCrime => 'Crimen';
+
+  @override
+  String get catalogGenreMystery => 'Misterio';
+
+  @override
+  String get catalogGenreWar => 'Bélicas';
+
+  @override
+  String get catalogGenreFantasy => 'Fantasía';
+
+  @override
+  String get catalogGenreRomance => 'Romance';
+
+  @override
+  String get catalogGenreFamily => 'Familiares';
+
+  @override
+  String get catalogGenreHistory => 'Históricas';
+
+  @override
+  String get catalogGenreWestern => 'Westerns';
+
+  @override
+  String get catalogCountryRu => 'Cine ruso';
+
+  @override
+  String get catalogCountrySoviet => 'Cine soviético';
+
+  @override
+  String get catalogCountryKr => 'Coreano';
+
+  @override
+  String get catalogCountryTr => 'Turco';
+
+  @override
+  String get catalogCountryGb => 'Británico';
+
+  @override
+  String get catalogDocs => 'Documentales';
+
+  @override
+  String get catalogChipAll => 'Todo';
+
+  @override
+  String get catalogChipMovies => 'Películas';
+
+  @override
+  String get catalogChipSeries => 'Series';
+
+  @override
+  String get catalogChipNew => 'Nuevo';
+
+  @override
+  String get ytSignInTitle => 'Iniciar sesión en YouTube';
+
+  @override
+  String get ytSignInHint =>
+      'Inicia sesión con tu cuenta de Google. La ventana se cierra sola al terminar.';
+
+  @override
+  String get ytSignInSaving => 'Guardando el inicio de sesión…';
+
+  @override
+  String get ytSignInManual => 'Ya entré';
+
+  @override
+  String ytSignInFailed(String error) {
+    return 'No se guardó el inicio de sesión: $error';
+  }
+
+  @override
+  String get ytSignInNoBrowser =>
+      'El navegador integrado no está disponible (falta WebView2).';
+
+  @override
+  String get ytConnectedNow => 'Cuenta de YouTube conectada';
+
+  @override
+  String get ytNotConnectedNow => 'La cuenta de YouTube no está conectada';
+
+  @override
+  String get ytReconnect => 'Conectar de nuevo';
+
+  @override
+  String get ytReconnectNeeded =>
+      'YouTube ya no acepta el inicio de sesión guardado. Conecta la cuenta de nuevo.';
+
+  @override
+  String ytFeedFailedPlain(String error) {
+    return 'No se pudo cargar el feed: $error';
+  }
 }

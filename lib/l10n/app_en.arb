@@ -2870,5 +2870,56 @@
     }
   },
   "watchTwitchClientId": "Twitch Client ID",
-  "watchTwitchClientSecret": "Twitch Client Secret"
+  "watchTwitchClientSecret": "Twitch Client Secret",
+  "catalogMoviesNew": "New movies",
+  "catalogSeriesNew": "New series",
+  "catalogOnAir": "On air now",
+  "catalogMoviesPopular": "Popular movies",
+  "catalogSeriesPopular": "Popular series",
+  "catalogMoviesBest": "Best movies",
+  "catalogGenreComedy": "Comedies",
+  "catalogGenreAction": "Action",
+  "catalogGenreThriller": "Thrillers",
+  "catalogGenreHorror": "Horror",
+  "catalogGenreSciFi": "Sci-Fi",
+  "catalogGenreDrama": "Drama",
+  "catalogGenreCrime": "Crime",
+  "catalogGenreMystery": "Mystery",
+  "catalogGenreWar": "War",
+  "catalogGenreFantasy": "Fantasy",
+  "catalogGenreRomance": "Romance",
+  "catalogGenreFamily": "Family",
+  "catalogGenreHistory": "History",
+  "catalogGenreWestern": "Westerns",
+  "catalogCountryRu": "Russian cinema",
+  "catalogCountrySoviet": "Soviet cinema",
+  "catalogCountryKr": "Korean",
+  "catalogCountryTr": "Turkish",
+  "catalogCountryGb": "British",
+  "catalogDocs": "Documentaries",
+  "catalogChipAll": "All",
+  "catalogChipMovies": "Movies",
+  "catalogChipSeries": "Series",
+  "catalogChipNew": "New",
+  "ytSignInTitle": "Sign in to YouTube",
+  "ytSignInHint": "Sign in with your Google account. The window closes by itself when you are in.",
+  "ytSignInSaving": "Saving the sign-in…",
+  "ytSignInManual": "I'm signed in",
+  "ytSignInFailed": "Sign-in was not saved: {error}",
+  "@ytSignInFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "ytSignInNoBrowser": "The embedded browser is not available (WebView2 is missing).",
+  "ytConnectedNow": "YouTube account connected",
+  "ytNotConnectedNow": "YouTube account is not connected",
+  "ytReconnect": "Reconnect",
+  "ytReconnectNeeded": "YouTube no longer accepts the saved sign-in. Connect the account again.",
+  "ytFeedFailedPlain": "Could not load the feed: {error}",
+  "@ytFeedFailedPlain": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  }
 }

@@ -44,9 +44,13 @@ const double _kChannelAspect = 1.05;
 const Duration _kHoverDuration = Duration(milliseconds: 120);
 
 /// Rail sections; a divider is drawn between groups.
-const List<List<String>> _kRailGroups = <List<String>>[
+final List<List<String>> _kRailGroups = <List<String>>[
   <String>['recs'],
   <String>['trend_movies', 'trend_series', 'top_series'],
+  kNewShelves,
+  kGenreShelves,
+  kCountryShelves,
+  <String>['netflix_apple', 'docs'],
   <String>['cartoons', 'old_cartoons', 'soviet_cartoons'],
   <String>['anime', 'old_anime'],
   <String>['tv', 'youtube', 'twitch', 'kick', 'movix'],
@@ -80,6 +84,33 @@ IconData _shelfIcon(String id) => switch (id) {
   'kp_movies_top' => Icons.emoji_events_outlined,
   'kp_series_top' => Icons.workspace_premium_outlined,
   'kp_popular' => Icons.trending_up,
+  'new_movies' => Icons.new_releases_outlined,
+  'new_series' => Icons.fiber_new_outlined,
+  'on_air' => Icons.sensors,
+  'pop_movies' => Icons.trending_up,
+  'pop_series' => Icons.trending_up,
+  'top_movies' => Icons.emoji_events_outlined,
+  'g_comedy' => Icons.sentiment_very_satisfied_outlined,
+  'g_action' => Icons.flash_on_outlined,
+  'g_thriller' => Icons.psychology_alt_outlined,
+  'g_horror' => Icons.nightlight_outlined,
+  'g_scifi' => Icons.rocket_launch_outlined,
+  'g_drama' => Icons.theater_comedy_outlined,
+  'g_crime' => Icons.gavel,
+  'g_mystery' => Icons.help_outline,
+  'g_war' => Icons.shield_outlined,
+  'g_fantasy' => Icons.auto_fix_high,
+  'g_romance' => Icons.favorite_border,
+  'g_family' => Icons.family_restroom_outlined,
+  'g_history' => Icons.account_balance_outlined,
+  'g_western' => Icons.landscape_outlined,
+  'c_ru' => Icons.flag_outlined,
+  'c_soviet' => Icons.star_border,
+  'c_kr' => Icons.public,
+  'c_tr' => Icons.public,
+  'c_gb' => Icons.public,
+  'netflix_apple' => Icons.connected_tv_outlined,
+  'docs' => Icons.article_outlined,
   _ => Icons.movie_outlined,
 };
 
@@ -106,7 +137,45 @@ String _shelfLabel(S l, String id) => switch (id) {
   'kp_movies_top' => l.catalogKpMovies,
   'kp_series_top' => l.catalogKpSeries,
   'kp_popular' => l.catalogKpPopular,
+  'new_movies' => l.catalogMoviesNew,
+  'new_series' => l.catalogSeriesNew,
+  'on_air' => l.catalogOnAir,
+  'pop_movies' => l.catalogMoviesPopular,
+  'pop_series' => l.catalogSeriesPopular,
+  'top_movies' => l.catalogMoviesBest,
+  'g_comedy' => l.catalogGenreComedy,
+  'g_action' => l.catalogGenreAction,
+  'g_thriller' => l.catalogGenreThriller,
+  'g_horror' => l.catalogGenreHorror,
+  'g_scifi' => l.catalogGenreSciFi,
+  'g_drama' => l.catalogGenreDrama,
+  'g_crime' => l.catalogGenreCrime,
+  'g_mystery' => l.catalogGenreMystery,
+  'g_war' => l.catalogGenreWar,
+  'g_fantasy' => l.catalogGenreFantasy,
+  'g_romance' => l.catalogGenreRomance,
+  'g_family' => l.catalogGenreFamily,
+  'g_history' => l.catalogGenreHistory,
+  'g_western' => l.catalogGenreWestern,
+  'c_ru' => l.catalogCountryRu,
+  'c_soviet' => l.catalogCountrySoviet,
+  'c_kr' => l.catalogCountryKr,
+  'c_tr' => l.catalogCountryTr,
+  'c_gb' => l.catalogCountryGb,
+  'netflix_apple' => 'Netflix \u00B7 Apple TV+', // proper nouns
+  'docs' => l.catalogDocs,
   _ => id,
+};
+
+String _chipLabel(S l, String chip) => switch (chip) {
+  'all' => l.catalogChipAll,
+  'movies' => l.catalogChipMovies,
+  'series' => l.catalogChipSeries,
+  'new' => l.catalogChipNew,
+  'netflix' => 'Netflix', // proper noun
+  'apple' => 'Apple TV+', // proper noun
+  'bbc' => 'BBC', // proper noun
+  _ => chip,
 };
 
 /// Recommendations, TMDB shelves (series, cartoons, old cartoons, anime) and
@@ -474,7 +543,7 @@ class _SearchResults extends ConsumerWidget {
 }
 
 class _ShelfView extends ConsumerWidget {
-  const _ShelfView({required this.id, this.filter = ''});
+  const _ShelfView({required this.id, this.filter = '', super.key});
 
   final String id;
 
@@ -485,6 +554,7 @@ class _ShelfView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final S l = S.of(context);
     if (id == 'tv') return _TvShelf(filter: filter);
+    if (kShelfChips.containsKey(id)) return _ChipShelf(id: id);
     final AsyncValue<List<CatalogItem>> shelf = ref.watch(shelfProvider(id));
     return shelf.when(
       data: (List<CatalogItem> all) {
@@ -513,6 +583,53 @@ class _ShelfView extends ConsumerWidget {
     if (id == 'recs') return l.catalogRecsEmpty;
     if (id.startsWith('kp_')) return l.catalogNoKinopoisk;
     return l.catalogEmpty;
+  }
+}
+
+/// A shelf with a row of choices (platform, kind of documentary) above it.
+class _ChipShelf extends StatefulWidget {
+  const _ChipShelf({required this.id});
+
+  final String id;
+
+  @override
+  State<_ChipShelf> createState() => _ChipShelfState();
+}
+
+class _ChipShelfState extends State<_ChipShelf> {
+  late String _chip = kShelfChips[widget.id]?.first ?? '';
+
+  @override
+  Widget build(BuildContext context) {
+    final S l = S.of(context);
+    final List<String> chips = kShelfChips[widget.id] ?? const <String>[];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: <Widget>[
+              for (final String chip in chips)
+                ChoiceChip(
+                  key: ValueKey<String>(chip),
+                  label: Text(_chipLabel(l, chip)),
+                  selected: _chip == chip,
+                  onSelected: (_) => setState(() => _chip = chip),
+                ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: _ShelfView(
+            key: ValueKey<String>(shelfIdFor(widget.id, _chip)),
+            id: shelfIdFor(widget.id, _chip),
+          ),
+        ),
+      ],
+    );
   }
 }
 

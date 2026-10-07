@@ -198,6 +198,8 @@ class TmdbMoviesApi {
     int? voteCountGte,
     double? voteAverageGte,
     String? originalLanguage,
+    String? withCompanies,
+    String? withOriginCountry,
     String sortBy = 'popularity.desc',
     int page = 1,
   }) async {
@@ -212,6 +214,10 @@ class TmdbMoviesApi {
         params['with_genres'] = genreIds;
       } else if (genreId != null) {
         params['with_genres'] = genreId;
+      }
+      if (withCompanies != null) params['with_companies'] = withCompanies;
+      if (withOriginCountry != null) {
+        params['with_origin_country'] = withOriginCountry;
       }
       if (year != null) params['primary_release_year'] = year;
       if (releaseDateGte != null) {
@@ -243,6 +249,27 @@ class TmdbMoviesApi {
           .toList();
     } on DioException catch (e) {
       throw _client.handleDioException(e, 'Failed to discover movies');
+    }
+  }
+
+  /// Production companies whose name matches [query]; used to turn a studio
+  /// name into the ids `discover` filters by.
+  Future<List<TmdbCompany>> searchCompanies(String query) async {
+    _client.ensureApiKey();
+    try {
+      final Response<dynamic> response = await _client.get(
+        '/search/company',
+        queryParameters: <String, dynamic>{'query': query},
+      );
+      final List<Map<String, dynamic>> items =
+          _client.extractResults(response, 'Failed to search companies');
+      return <TmdbCompany>[
+        for (final Map<String, dynamic> json in items)
+          if (json['id'] is int && json['name'] is String)
+            TmdbCompany(id: json['id'] as int, name: json['name'] as String),
+      ];
+    } on DioException catch (e) {
+      throw _client.handleDioException(e, 'Failed to search companies');
     }
   }
 

@@ -6026,4 +6026,131 @@ class SZh extends S {
 
   @override
   String get watchTwitchClientSecret => 'Twitch Client Secret';
+
+  @override
+  String get catalogMoviesNew => '新片';
+
+  @override
+  String get catalogSeriesNew => '新剧';
+
+  @override
+  String get catalogOnAir => '正在播出';
+
+  @override
+  String get catalogMoviesPopular => '热门电影';
+
+  @override
+  String get catalogSeriesPopular => '热门剧集';
+
+  @override
+  String get catalogMoviesBest => '最佳电影';
+
+  @override
+  String get catalogGenreComedy => '喜剧';
+
+  @override
+  String get catalogGenreAction => '动作';
+
+  @override
+  String get catalogGenreThriller => '惊悚';
+
+  @override
+  String get catalogGenreHorror => '恐怖';
+
+  @override
+  String get catalogGenreSciFi => '科幻';
+
+  @override
+  String get catalogGenreDrama => '剧情';
+
+  @override
+  String get catalogGenreCrime => '犯罪';
+
+  @override
+  String get catalogGenreMystery => '悬疑';
+
+  @override
+  String get catalogGenreWar => '战争';
+
+  @override
+  String get catalogGenreFantasy => '奇幻';
+
+  @override
+  String get catalogGenreRomance => '爱情';
+
+  @override
+  String get catalogGenreFamily => '家庭';
+
+  @override
+  String get catalogGenreHistory => '历史';
+
+  @override
+  String get catalogGenreWestern => '西部';
+
+  @override
+  String get catalogCountryRu => '俄罗斯影视';
+
+  @override
+  String get catalogCountrySoviet => '苏联影视';
+
+  @override
+  String get catalogCountryKr => '韩国影视';
+
+  @override
+  String get catalogCountryTr => '土耳其影视';
+
+  @override
+  String get catalogCountryGb => '英国影视';
+
+  @override
+  String get catalogDocs => '纪录片';
+
+  @override
+  String get catalogChipAll => '全部';
+
+  @override
+  String get catalogChipMovies => '电影';
+
+  @override
+  String get catalogChipSeries => '剧集';
+
+  @override
+  String get catalogChipNew => '最新';
+
+  @override
+  String get ytSignInTitle => '登录 YouTube';
+
+  @override
+  String get ytSignInHint => '请使用 Google 账号登录。登录完成后窗口会自动关闭。';
+
+  @override
+  String get ytSignInSaving => '正在保存登录…';
+
+  @override
+  String get ytSignInManual => '我已登录';
+
+  @override
+  String ytSignInFailed(String error) {
+    return '登录未保存:$error';
+  }
+
+  @override
+  String get ytSignInNoBrowser => '内置浏览器不可用(缺少 WebView2)。';
+
+  @override
+  String get ytConnectedNow => '已连接 YouTube 账号';
+
+  @override
+  String get ytNotConnectedNow => '未连接 YouTube 账号';
+
+  @override
+  String get ytReconnect => '重新连接';
+
+  @override
+  String get ytReconnectNeeded => 'YouTube 不再接受已保存的登录,请重新连接账号。';
+
+  @override
+  String ytFeedFailedPlain(String error) {
+    return '无法加载列表:$error';
+  }
 }

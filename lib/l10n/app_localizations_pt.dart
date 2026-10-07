@@ -6388,4 +6388,134 @@ class SPt extends S {
 
   @override
   String get watchTwitchClientSecret => 'Twitch Client Secret';
+
+  @override
+  String get catalogMoviesNew => 'Filmes novos';
+
+  @override
+  String get catalogSeriesNew => 'Séries novas';
+
+  @override
+  String get catalogOnAir => 'No ar agora';
+
+  @override
+  String get catalogMoviesPopular => 'Filmes populares';
+
+  @override
+  String get catalogSeriesPopular => 'Séries populares';
+
+  @override
+  String get catalogMoviesBest => 'Melhores filmes';
+
+  @override
+  String get catalogGenreComedy => 'Comédias';
+
+  @override
+  String get catalogGenreAction => 'Ação';
+
+  @override
+  String get catalogGenreThriller => 'Suspense';
+
+  @override
+  String get catalogGenreHorror => 'Terror';
+
+  @override
+  String get catalogGenreSciFi => 'Ficção científica';
+
+  @override
+  String get catalogGenreDrama => 'Dramas';
+
+  @override
+  String get catalogGenreCrime => 'Crime';
+
+  @override
+  String get catalogGenreMystery => 'Mistério';
+
+  @override
+  String get catalogGenreWar => 'Guerra';
+
+  @override
+  String get catalogGenreFantasy => 'Fantasia';
+
+  @override
+  String get catalogGenreRomance => 'Romance';
+
+  @override
+  String get catalogGenreFamily => 'Família';
+
+  @override
+  String get catalogGenreHistory => 'Históricos';
+
+  @override
+  String get catalogGenreWestern => 'Faroestes';
+
+  @override
+  String get catalogCountryRu => 'Cinema russo';
+
+  @override
+  String get catalogCountrySoviet => 'Cinema soviético';
+
+  @override
+  String get catalogCountryKr => 'Coreano';
+
+  @override
+  String get catalogCountryTr => 'Turco';
+
+  @override
+  String get catalogCountryGb => 'Britânico';
+
+  @override
+  String get catalogDocs => 'Documentários';
+
+  @override
+  String get catalogChipAll => 'Tudo';
+
+  @override
+  String get catalogChipMovies => 'Filmes';
+
+  @override
+  String get catalogChipSeries => 'Séries';
+
+  @override
+  String get catalogChipNew => 'Novos';
+
+  @override
+  String get ytSignInTitle => 'Entrar no YouTube';
+
+  @override
+  String get ytSignInHint =>
+      'Entre com sua conta Google. A janela fecha sozinha quando terminar.';
+
+  @override
+  String get ytSignInSaving => 'Salvando o login…';
+
+  @override
+  String get ytSignInManual => 'Já entrei';
+
+  @override
+  String ytSignInFailed(String error) {
+    return 'O login não foi salvo: $error';
+  }
+
+  @override
+  String get ytSignInNoBrowser =>
+      'O navegador integrado não está disponível (falta o WebView2).';
+
+  @override
+  String get ytConnectedNow => 'Conta do YouTube conectada';
+
+  @override
+  String get ytNotConnectedNow => 'A conta do YouTube não está conectada';
+
+  @override
+  String get ytReconnect => 'Conectar de novo';
+
+  @override
+  String get ytReconnectNeeded =>
+      'O YouTube não aceita mais o login salvo. Conecte a conta de novo.';
+
+  @override
+  String ytFeedFailedPlain(String error) {
+    return 'Não foi possível carregar o feed: $error';
+  }
 }

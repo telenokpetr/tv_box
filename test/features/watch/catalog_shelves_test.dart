@@ -62,6 +62,83 @@ void main() {
     });
   });
 
+  group('new shelves', () {
+    test('genre, country and chip shelves are listed once and in order', () {
+      expect(kShelfIds, containsAll(kNewShelves));
+      expect(kShelfIds, containsAll(kGenreShelves));
+      expect(kShelfIds, containsAll(kCountryShelves));
+      expect(kShelfIds, containsAll(kShelfChips.keys));
+    });
+
+    test('every genre shelf has an id for movies or series', () {
+      for (final MapEntry<String, GenreIds> e in kGenreIds.entries) {
+        expect(e.value.movie != null || e.value.tv != null, isTrue, reason: e.key);
+      }
+    });
+
+    test('every country shelf filters by something', () {
+      for (final MapEntry<String, CountryFilter> e in kCountryFilters.entries) {
+        expect(
+          e.value.country != null || e.value.language != null,
+          isTrue,
+          reason: e.key,
+        );
+      }
+    });
+
+    test('shelves with choices start on the first one', () {
+      for (final MapEntry<String, List<String>> e in kShelfChips.entries) {
+        expect(e.value, isNotEmpty);
+        expect(e.value.first, 'all', reason: e.key);
+      }
+    });
+  });
+
+  group('parseShelfId', () {
+    test('a plain id has no chip', () {
+      final ({String base, String? chip}) spec = parseShelfId('docs');
+      expect(spec.base, 'docs');
+      expect(spec.chip, isNull);
+    });
+
+    test('splits the base from the chip', () {
+      final ({String base, String? chip}) spec = parseShelfId('docs:bbc');
+      expect(spec.base, 'docs');
+      expect(spec.chip, 'bbc');
+    });
+
+    test('shelfIdFor is the inverse', () {
+      expect(shelfIdFor('docs', 'bbc'), 'docs:bbc');
+      expect(shelfIdFor('docs', null), 'docs');
+      expect(parseShelfId(shelfIdFor('netflix_apple', 'apple')).chip, 'apple');
+    });
+  });
+
+  group('tmdbDate', () {
+    test('pads month and day', () {
+      expect(tmdbDate(DateTime(2026, 3, 7)), '2026-03-07');
+      expect(tmdbDate(DateTime(2026, 12, 31)), '2026-12-31');
+    });
+  });
+
+  group('studioMatches', () {
+    test('Netflix companies by prefix, any case', () {
+      expect(studioMatches('netflix', 'Netflix'), isTrue);
+      expect(studioMatches('netflix', 'NETFLIX Animation'), isTrue);
+      expect(studioMatches('netflix', 'Not Netflix'), isFalse);
+    });
+
+    test('Apple counts its film studios, not the fruit stands', () {
+      expect(studioMatches('apple', 'Apple Studios'), isTrue);
+      expect(studioMatches('apple', 'Apple Original Films'), isTrue);
+      expect(studioMatches('apple', 'Apple Pie Productions'), isFalse);
+    });
+
+    test('an unknown studio matches nothing', () {
+      expect(studioMatches('hulu', 'Hulu'), isFalse);
+    });
+  });
+
   group('interleave', () {
     test('alternates the two lists and appends the longer tail', () {
       final List<CatalogItem> out = interleave(
