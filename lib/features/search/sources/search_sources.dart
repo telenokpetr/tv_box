@@ -18,7 +18,10 @@ import 'musicbrainz_albums_source.dart';
 import 'podcast_index_source.dart';
 import 'openlibrary_source.dart';
 import 'tmdb_anime_source.dart';
+import 'tmdb_appletv_source.dart';
+import 'tmdb_bbc_doc_source.dart';
 import 'tmdb_movies_source.dart';
+import 'tmdb_netflix_tv_source.dart';
 import 'tmdb_tv_source.dart';
 import 'tvdb_movies_source.dart';
 import 'tvdb_series_source.dart';
@@ -33,6 +36,10 @@ final List<SearchSource> searchSources = List<SearchSource>.unmodifiable(
     TmdbMoviesSource(),
     TmdbTvSource(),
     TmdbAnimeSource(),
+    // Platform-specific (browse-only, no text search)
+    TmdbNetflixTvSource(),
+    TmdbAppleTvSource(),
+    TmdbBbcDocSource(),
     // TVmaze
     TvMazeTvSource(),
     // TheTVDB

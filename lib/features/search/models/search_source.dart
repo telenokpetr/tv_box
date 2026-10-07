@@ -185,6 +185,11 @@ abstract class SearchSource {
   /// Whether the source supports filter-only browse without a text query.
   bool get supportsBrowse;
 
+  /// Whether the source appears in the active sources list when a text query
+  /// is typed. Browse-only sources (e.g. platform-specific channels) should
+  /// override this to `false` so the search bar doesn't hit them.
+  bool get supportsSearch => true;
+
   /// Single entry point for both search (when [query] is non-empty) and
   /// browse (when it isn't). Each source decides how it combines them.
   Future<BrowseResult> fetch(

@@ -210,6 +210,7 @@ class TmdbApi {
     double? voteAverageGte,
     String? originalLanguage,
     List<int>? withoutGenreIds,
+    String? withNetworks,
     String sortBy = 'popularity.desc',
     int page = 1,
   }) =>
@@ -225,6 +226,7 @@ class TmdbApi {
         voteAverageGte: voteAverageGte,
         originalLanguage: originalLanguage,
         withoutGenreIds: withoutGenreIds,
+        withNetworks: withNetworks,
         sortBy: sortBy,
         page: page,
       );

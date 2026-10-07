@@ -250,6 +250,8 @@ class TmdbTvApi {
   }
 
   /// [airDateGte]/[airDateLte] match shows with an episode in that window.
+  /// [withNetworks] filters by TMDB network IDs (e.g. 213=Netflix,
+  /// 2552=Apple TV+, 4=BBC One). Separate multiple IDs with a pipe `|`.
   Future<List<TvShow>> discoverTvShows({
     int? genreId,
     String? genreIds,
@@ -262,6 +264,7 @@ class TmdbTvApi {
     double? voteAverageGte,
     String? originalLanguage,
     List<int>? withoutGenreIds,
+    String? withNetworks,
     String sortBy = 'popularity.desc',
     int page = 1,
   }) async {
@@ -296,6 +299,7 @@ class TmdbTvApi {
       if (withoutGenreIds != null && withoutGenreIds.isNotEmpty) {
         params['without_genres'] = withoutGenreIds.join(',');
       }
+      if (withNetworks != null) params['with_networks'] = withNetworks;
 
       final Response<dynamic> response = await _client.get(
         '/discover/tv',

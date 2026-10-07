@@ -103,6 +103,9 @@ class BrowseState {
     return sources.where((SearchSource source) {
       if (disabledSourceIds.contains(source.id)) return false;
       if (narrowed.isNotEmpty && !narrowed.contains(source.id)) return false;
+      // Browse-only sources do not support text search — hide them while a
+      // query is typed so they do not add shimmering empty sections.
+      if (hasSearchQuery && !source.supportsSearch) return false;
       for (final CommonSelection selection in commonSelections.values) {
         if (!selection.targets.containsKey(source.id)) return false;
       }
